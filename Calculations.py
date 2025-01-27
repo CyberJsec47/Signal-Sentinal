@@ -1,12 +1,14 @@
+import csv
 import numpy as np
 from scipy.stats import entropy
 from scipy.signal import welch
 import colorama
 from colorama import Fore
+from SigCapture import freq_select
 
 colorama.init(autoreset=True)
 
-file = '/home/kali/Documents/RF detection/pythonProject/RFDetection/GNU Radio/IQdata.dat'
+file = '/home/kali/Documents/SignalSentinal/iq_samples.dat'
 iq_data = np.fromfile(file, dtype=np.complex64)
 fs = 1_000_000
 
@@ -51,9 +53,9 @@ def find_amplitude(sample_file):
     return amplitude
 
 
-def feature_extraction(sample_file):
+def feature_extraction(sample_file, frequency):
 
-    Freq = '434.90Mhz'
+    Freq = frequency
     SNR = calculate_snr(sample_file)
     Mag = max_mag(sample_file)
     Phase = sig_phase(sample_file)
@@ -63,3 +65,23 @@ def feature_extraction(sample_file):
 
     print(Fore.BLUE + f"Frequency:{Fore.GREEN}{Freq}\n{Fore.BLUE}Signal to Noise ratio:{Fore.GREEN}{SNR}\n{Fore.BLUE}Magnitude:{Fore.GREEN}{Mag}\n{Fore.BLUE}Phase:{Fore.GREEN}"
                       f"{Phase}\n{Fore.BLUE}Entropy:{Fore.GREEN}{Entropy}\n{Fore.BLUE}Power Spectral Density:{Fore.GREEN}{PSD}\n{Fore.BLUE}Amplitude:{Fore.GREEN}{Amplitude}")
+
+
+def export_csv(sample_file, output_file='Features.csv'):
+    frequency = freq_select()
+    features = {
+        'Frequency': frequency,
+        'Signal To Noise': calculate_snr(sample_file),
+        'Max Magnitude': max_mag(sample_file),
+        'Average Phase': sig_phase(sample_file),
+        'Entropy': find_entropy(sample_file),
+        'PSD': find_psd(sample_file, fs),
+        'Amplitude': find_amplitude(sample_file)
+    }
+
+    with open(output_file, mode='w', newline='') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=features.keys())
+        writer.writeheader()
+        writer.writerow(features)
+
+
