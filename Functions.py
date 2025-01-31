@@ -4,6 +4,7 @@ from math import ceil
 from colorama import Fore, Style
 
 folder_path = "/home/kali/Documents/SignalSentinal"
+fs = 1_000_000
 
 
 def capture_menu():
@@ -44,4 +45,3 @@ def capture_menu():
                 row_display += " " * (max_lengths[col] + 2) + Fore.BLUE + "|"
         print(row_display)
         print(border)
-
