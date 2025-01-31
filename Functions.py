@@ -1,47 +1,43 @@
-import os
-from math import ceil
-
-from colorama import Fore, Style
-
-folder_path = "/home/kali/Documents/SignalSentinal"
-fs = 1_000_000
+import numpy as np
+from rtlsdr import RtlSdr
+import time
+from colorama import Fore
 
 
-def capture_menu():
-    folder = folder_path
+def freq_select():
+    frequency = float(input(Fore.BLUE + "Frequency(MHz): "))
+    freq_mhz = float(frequency)
+    freq_in_hz = freq_mhz * 1e6
+    return freq_in_hz
 
-    extensions = ('*.dat', '*.csv')
 
-    files = [
-        file for file in os.listdir(folder_path)
-        if file.endswith(('.csv', '.dat'))
-    ]
+def get_signal(seconds, frequency):
+    sdr = RtlSdr()
 
-    print("Files in folder:", files)
+    try:
+        freq = sdr.center_freq = frequency
+        fs = sdr.fs = 1e6
+        sdr.gain = 'auto'
 
-    num_columns = 1
-    num_rows = ceil(len(files) / num_columns)
+        print(f"Starting signal capture on frequency {freq} for {seconds} seconds")
 
-    data_rows = []
-    max_lengths = []
+        total_samples = int(seconds * fs)
+        chunk_size = 256 * 1024
+        captured_samples = []
+        start_time = time.time()
 
-    for i in range(num_rows):
-        row = files[i * num_columns:(i + 1) * num_columns]
-        data_rows.append(row)
-    for col in range(num_columns):
-        max_len = max([len(data_rows[row][col]) for row in range(len(data_rows)) if col < len(data_rows[row])],
-                      default=0)
-        max_lengths.append(max_len)
+        while len(captured_samples) < total_samples:
+            sampled_needed = total_samples - len(captured_samples)
+            chunk = sdr.read_samples(min(chunk_size, sampled_needed))
+            captured_samples.extend(chunk)
 
-    print(Fore.GREEN + "Files found:" + Style.RESET_ALL)
-    border = Fore.BLUE + "+" + "+".join([Fore.BLUE + "-" * (length + 2) for length in max_lengths]) + Fore.BLUE + "+"
-    print(border)
-    for row in data_rows:
-        row_display = Fore.BLUE + "|"
-        for col in range(num_columns):
-            if col < len(row):
-                row_display += " " + Fore.GREEN + row[col].ljust(max_lengths[col]) + Fore.BLUE + " |"
-            else:
-                row_display += " " * (max_lengths[col] + 2) + Fore.BLUE + "|"
-        print(row_display)
-        print(border)
+            if time.time() - start_time >= seconds:
+                break
+
+        captured_samples_np = np.array(captured_samples, dtype=np.complex64)
+        output_path = '/home/kali/Documents/SignalSentinel/iq_samples.dat'
+        captured_samples_np.tofile(output_path)
+
+        print(f"Capture complete. collected {len(captured_samples)} samples\n Saving to {output_path}")
+    finally:
+        sdr.close()
