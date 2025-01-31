@@ -8,7 +8,7 @@ from SigCapture import freq_select
 
 colorama.init(autoreset=True)
 
-file = '/home/kali/Documents/SignalSentinal/iq_samples.dat'
+file = '/home/kali/Documents/SignalSentinel/iq_samples.dat'
 iq_data = np.fromfile(file, dtype=np.complex64)
 fs = 1_000_000
 
@@ -83,5 +83,4 @@ def export_csv(sample_file, output_file='Features.csv'):
         writer = csv.DictWriter(csv_file, fieldnames=features.keys())
         writer.writeheader()
         writer.writerow(features)
-
 
