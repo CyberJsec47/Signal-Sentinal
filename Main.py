@@ -2,7 +2,6 @@ from Calculations import *
 from pyfiglet import Figlet
 from colorama import Fore
 from SigCapture import *
-from Functions import *
 import numpy as np
 
 file = 'iq_samples.dat'
