@@ -5,10 +5,12 @@ from colorama import Fore
 
 
 def freq_select():
-    frequency = float(input(Fore.GREEN + "Frequency(MHz): "))
+    frequency = float(input(Fore.GREEN + "Choose a frequency to use (MHz): "))
     freq_mhz = float(frequency)
     freq_in_hz = freq_mhz * 1e6
+    print(Fore.GREEN + f"Using {freq_in_hz} Hz")
     return freq_in_hz
+
 
 
 def get_signal(seconds, frequency):
