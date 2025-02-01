@@ -3,7 +3,7 @@ from math import ceil
 
 from colorama import Fore, Style
 
-folder_path = "/home/kali/Documents/SignalSentinal"
+folder_path = "iq_samples.dat"
 fs = 1_000_000
 
 
@@ -44,8 +44,4 @@ def capture_menu():
             else:
                 row_display += " " * (max_lengths[col] + 2) + Fore.BLUE + "|"
         print(row_display)
-<<<<<<< HEAD
         print(border)
-=======
-        print(border)
->>>>>>> 5cbbe08eea3435f52a1064e9962addf3288a7430
