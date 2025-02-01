@@ -77,13 +77,8 @@ def main(frequency):
                     print(Fore.RED + f.renderText("Exiting"))
                     quit()
             elif option == 3:
-                print(Fore.RED + "Placeholder")
-                again = input("Return to main or exit ('m' or 'e'): ")
-                if again == ('m' or 'M'):
-                    continue
-                else:
-                    print(Fore.RED + f.renderText("Exiting"))
-                    quit()
+                export_csv(iq_data, freq_hz, output_file='Features.csv')
+
                 continue
             elif option == 4:
                 print("Generating data placeholder")

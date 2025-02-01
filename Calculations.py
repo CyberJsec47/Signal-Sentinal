@@ -67,8 +67,8 @@ def feature_extraction(sample_file, frequency):
                       f"{Phase}\n{Fore.BLUE}Entropy:{Fore.GREEN}{Entropy}\n{Fore.BLUE}Power Spectral Density:{Fore.GREEN}{PSD}\n{Fore.BLUE}Amplitude:{Fore.GREEN}{Amplitude}")
 
 
-def export_csv(sample_file, output_file='Features.csv'):
-    frequency = freq_select()
+def export_csv(sample_file, frequency, output_file='Features.csv'):
+
     features = {
         'Frequency': frequency,
         'Signal To Noise': calculate_snr(sample_file),
