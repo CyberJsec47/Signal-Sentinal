@@ -44,4 +44,8 @@ def capture_menu():
             else:
                 row_display += " " * (max_lengths[col] + 2) + Fore.BLUE + "|"
         print(row_display)
+<<<<<<< HEAD
         print(border)
+=======
+        print(border)
+>>>>>>> 5cbbe08eea3435f52a1064e9962addf3288a7430
