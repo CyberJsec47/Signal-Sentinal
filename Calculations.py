@@ -1,9 +1,5 @@
 import csv
-<<<<<<< HEAD
 import numpy as np 
-=======
-import numpy as np
->>>>>>> 5cbbe08eea3435f52a1064e9962addf3288a7430
 from scipy.stats import entropy
 from scipy.signal import welch
 import colorama
@@ -12,11 +8,7 @@ from SigCapture import freq_select
 
 colorama.init(autoreset=True)
 
-<<<<<<< HEAD
 file = 'iq_samples.dat'
-=======
-file = '/home/kali/Documents/SignalSentinel/iq_samples.dat'
->>>>>>> 5cbbe08eea3435f52a1064e9962addf3288a7430
 iq_data = np.fromfile(file, dtype=np.complex64)
 fs = 1_000_000
 
@@ -91,7 +83,3 @@ def export_csv(sample_file, output_file='Features.csv'):
         writer = csv.DictWriter(csv_file, fieldnames=features.keys())
         writer.writeheader()
         writer.writerow(features)
-<<<<<<< HEAD
-=======
-
->>>>>>> 5cbbe08eea3435f52a1064e9962addf3288a7430
