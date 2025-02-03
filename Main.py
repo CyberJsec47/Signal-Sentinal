@@ -41,7 +41,7 @@ def main(frequency):
             print(Fore.BLUE + "-" * 25)
             print(Fore.GREEN + "| Save to CSV         [3] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Analyse signal      [4] |")
+            print(Fore.GREEN + "| View CSV sample     [4] |")
             print(Fore.BLUE + "-" * 25)
             print(Fore.GREEN + "| Change frequency    [5] |")
             print(Fore.BLUE + "-" * 25)
@@ -74,7 +74,7 @@ def main(frequency):
             elif option == 2:
                 print(Fore.GREEN + "Current data from file iq_samples:")
                 feature_extraction(iq_data, freq_hz)
-                again = input("Return to main or exit ('m' or 'e'): ")
+                again = input(Fore.GREEN + "\nReturn to main or exit ('m' or 'e'): ")
                 if again == ('m' or 'M'):
                     continue
                 else:
@@ -84,8 +84,9 @@ def main(frequency):
                 export_csv(iq_data, freq_hz, fs)
                 continue
             elif option == 4:
-                print("Generating data placeholder")
-                again = input("Return to main or exit ('m' or 'e'): ")
+                print("Getting CSV file samples...")
+                view_CSV('Features.csv', 10)
+                again = input(Fore.GREEN + "\nReturn to main or exit ('m' or 'e'): ")
                 if again == ('m' or 'M'):
                     continue
                 else:

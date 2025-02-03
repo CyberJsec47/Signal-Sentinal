@@ -1,9 +1,9 @@
 import subprocess
-from colorama import Fore
 import numpy as np
 from rtlsdr import RtlSdr
 import time
 from colorama import Fore
+import csv
 
 
 def freq_select():
@@ -53,3 +53,17 @@ def check_rtl_sdr():
     except Exception as e:
         print(Fore.RED + f"Error checking RTL-SDR with lsusb: {e}")
         return False
+    
+
+def view_CSV(file_path, num_rows):
+
+    with open (file_path) as file:
+        
+        reader_obj = csv.reader(file, delimiter=',', quotechar='|')
+        for i, row in enumerate(reader_obj):
+            print(', '.join(row))
+            if i + 1 >= num_rows:  # Stop after printing `num_rows`
+                break
+ 
+
+            
