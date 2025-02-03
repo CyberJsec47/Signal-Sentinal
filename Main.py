@@ -47,6 +47,8 @@ def main(frequency):
             print(Fore.BLUE + "-" * 25)
             print(Fore.GREEN + "| Exit                [6] |")
             print(Fore.BLUE + "-" * 25)
+            print(Fore.GREEN + "| Rolling Window      [7] |")
+            print(Fore.BLUE + "-" * 25)
             print(Fore.BLUE + "-" * 25)
 
             option = int(input(Fore.GREEN + "| Choose an option: "))
@@ -100,6 +102,8 @@ def main(frequency):
             elif option == 6:
                 print(Fore.RED + f.renderText("Exiting"))
                 quit()
+            elif option == 7:
+                rolling_window(5, freq_hz)
             else:
                 print(Fore.RED + "Select an option")
 

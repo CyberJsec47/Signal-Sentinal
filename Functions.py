@@ -37,7 +37,7 @@ def get_signal(seconds, frequency):
                 break
 
         captured_samples_np = np.array(captured_samples, dtype=np.complex64)
-        output_path = 'rolling_test.dat'
+        output_path = 'iq_samples.dat'
         captured_samples_np.tofile(output_path)
 
         print(Fore.GREEN + f"Capture complete. collected {len(captured_samples)} samples\n Saving to {output_path}")
@@ -99,6 +99,5 @@ def rolling_window(seconds, frequency):
         feature_extraction(iq_data, fs)
     finally:
         sdr.close()
-
 
 
