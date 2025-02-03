@@ -4,8 +4,8 @@ from scipy.stats import entropy
 from scipy.signal import welch
 import colorama
 from colorama import Fore
-from SigCapture import freq_select
 import os
+
 
 colorama.init(autoreset=True)
 
