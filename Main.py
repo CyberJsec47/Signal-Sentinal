@@ -47,6 +47,8 @@ def main(frequency):
             print(Fore.BLUE + "-" * 25)
             print(Fore.GREEN + "| Exit                [6] |")
             print(Fore.BLUE + "-" * 25)
+            print(Fore.RED + "-------Testing Area-------")
+            print(Fore.RED + "Abandon hope, all ye who enter here\n")
             print(Fore.GREEN + "| Rolling Window      [7] |")
             print(Fore.BLUE + "-" * 25)
             print(Fore.BLUE + "-" * 25)

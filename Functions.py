@@ -96,7 +96,7 @@ def rolling_window(seconds, frequency):
         captured_samples_np = np.array(captured_samples, dtype=np.complex64)
         output_path = 'rolling_test.dat'
         captured_samples_np.tofile(output_path)
-        feature_extraction(iq_data, fs)
+        feature_extraction(iq_data, frequency)
     finally:
         sdr.close()
 
