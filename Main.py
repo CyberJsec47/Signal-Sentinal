@@ -1,7 +1,6 @@
 from Calculations import *
 from pyfiglet import Figlet
 from colorama import Fore
-from SigCapture import *
 import numpy as np
 from Functions import *
 
