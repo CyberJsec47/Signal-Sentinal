@@ -3,6 +3,7 @@ from pyfiglet import Figlet
 from colorama import Fore
 from SigCapture import *
 import numpy as np
+from Functions import *
 
 file = 'iq_samples.dat'
 iq_data = np.fromfile(file, dtype=np.complex64)
@@ -14,6 +15,11 @@ def opening_script():
     print("A machine learning project aimed at passively detecting RF jamming attacks")
     print("Designed to work on small form embedded systems for remote detection and response automation")
     print("Josh Perryman Bcs(Hons) Cyber Security 2025\n")
+    if check_rtl_sdr():
+        print(Fore.GREEN + "RTL_SDR Device found")
+    else:
+        print(Fore.RED + "No RTL-SDR device found, please reinstall device and start again")
+        exit()
     freq_hz = freq_select()
     return freq_hz
     
