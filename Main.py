@@ -75,35 +75,33 @@ def main(frequency):
                         continue
                 else:
                     main(freq)
+
             elif option == 2:
                 print(Fore.GREEN + "Current data from file iq_samples:")
                 feature_extraction(iq_data, freq_hz)
-                again = input(Fore.GREEN + "\nReturn to main or exit ('m' or 'e'): ")
-                if again == ('m' or 'M'):
-                    continue
-                else:
-                    print(Fore.RED + f.renderText("Exiting"))
-                    quit()
+                input(Fore.GREEN + "\nPress Enter to return to the menu...")
+                continue
+
             elif option == 3:
                 export_csv(iq_data, freq_hz, fs)
                 continue
+
             elif option == 4:
                 print("Getting CSV file samples...")
                 view_CSV('Features.csv', 10)
-                again = input(Fore.GREEN + "\nReturn to main or exit ('m' or 'e'): ")
-                if again == ('m' or 'M'):
-                    continue
-                else:
-                    print(Fore.RED + f.renderText("Exiting"))
-                    quit()
+                input(Fore.GREEN + "\nPress Enter to return to the menu...")
+                continue
+
             elif option == 5:
                 print(Fore.YELLOW + "Changing frequency...")
                 freq_hz = freq_select()
                 print(Fore.GREEN + f"New frequency set: {freq_hz} MHz")
                 continue 
+
             elif option == 6:
                 print(Fore.RED + f.renderText("Exiting"))
                 quit()
+
             elif option == 7:
                 rolling_window(5, freq_hz)
             else:

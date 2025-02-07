@@ -97,6 +97,7 @@ def rolling_window(seconds, frequency):
         output_path = 'rolling_test.dat'
         captured_samples_np.tofile(output_path)
         feature_extraction(iq_data, frequency)
+        export_csv(iq_data, frequency, fs)
     finally:
         sdr.close()
 

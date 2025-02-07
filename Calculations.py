@@ -70,7 +70,7 @@ def feature_extraction(sample_file, frequency):
 
 def export_csv(sample_file, frequency, fs):
 
-    output_file='Features.csv'
+    output_file='Safe_signals.csv'
 
     features = {
         'Frequency': frequency,
@@ -79,7 +79,8 @@ def export_csv(sample_file, frequency, fs):
         'Average Phase': sig_phase(sample_file),
         'Entropy': find_entropy(sample_file),
         'PSD': find_psd(sample_file, fs),
-        'Amplitude': find_amplitude(sample_file)
+        'Amplitude': find_amplitude(sample_file),
+        'Signal': "Safe"
     }
 
     file_exists = os.path.isfile(output_file)
