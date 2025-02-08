@@ -37,20 +37,11 @@ def main(frequency):
             print(Fore.BLUE + "-" * 25)
             print(Fore.GREEN + "| Capture a signal    [1] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| View current signal [2] |")
+            print(Fore.GREEN + "| Change frequency    [2] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Save to CSV         [3] |")
+            print(Fore.GREEN + "| View CSV sample     [3] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| View CSV sample     [4] |")
-            print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Change frequency    [5] |")
-            print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Exit                [6] |")
-            print(Fore.BLUE + "-" * 25)
-            print(Fore.RED + "-------Testing Area-------")
-            print(Fore.RED + "Abandon hope, all ye who enter here\n")
-            print(Fore.GREEN + "| Rolling Window      [7] |")
-            print(Fore.BLUE + "-" * 25)
+            print(Fore.GREEN + "| Exit                [4] |")
             print(Fore.BLUE + "-" * 25)
 
             option = int(input(Fore.GREEN + "| Choose an option: "))
@@ -60,50 +51,35 @@ def main(frequency):
                 print(Fore.GREEN + "Choose how long to capture for: (seconds)")
                 seconds = int(input(Fore.GREEN + "Time in Seconds: "))
                 print(Fore.GREEN + f"Capturing on frequency {freq_hz} MHz for {seconds} seconds")
-                get_signal(seconds, freq_hz)
-                choice = input(Fore.GREEN + "View captured data? 'y' or 'n': ")
+                rolling_window(seconds, freq_hz)
 
-                if choice == ('y' or 'Y'):
+                new = input(Fore.GREEN + "Redo signal capture? 'y' or 'n': ")
+                if new == ('y' or 'Y'):
+                    seconds = int(input(Fore.GREEN + "Time in Seconds: "))
+                    print(Fore.GREEN + f"Capturing on frequency {freq_hz} MHZ for {seconds} seconds")
+                    get_signal(seconds, freq_hz)
                     feature_extraction(iq_data, freq_hz)
-
-                    new = input(Fore.GREEN + "Redo signal capture? 'y' or 'n': ")
-                    if new == ('y' or 'Y'):
-                        seconds = int(input(Fore.GREEN + "Time in Seconds: "))
-                        print(Fore.GREEN + f"Capturing on frequency {freq_hz} MHZ for {seconds} seconds")
-                        get_signal(seconds, freq_hz)
-                        feature_extraction(iq_data, freq_hz)
-                        continue
+                    continue
                 else:
                     main(freq)
 
             elif option == 2:
-                print(Fore.GREEN + "Current data from file iq_samples:")
-                feature_extraction(iq_data, freq_hz)
-                input(Fore.GREEN + "\nPress Enter to return to the menu...")
-                continue
-
-            elif option == 3:
-                export_csv(iq_data, freq_hz, fs)
-                continue
-
-            elif option == 4:
-                print("Getting CSV file samples...")
-                view_CSV('Features.csv', 10)
-                input(Fore.GREEN + "\nPress Enter to return to the menu...")
-                continue
-
-            elif option == 5:
                 print(Fore.YELLOW + "Changing frequency...")
                 freq_hz = freq_select()
                 print(Fore.GREEN + f"New frequency set: {freq_hz} MHz")
                 continue 
 
-            elif option == 6:
+            elif option == 3:
+                print("Getting CSV file samples...")
+                view_CSV('Safe_signals.csv', 20)
+                input(Fore.GREEN + "\nPress Enter to return to the menu...")
+                continue
+
+
+            elif option == 4:
                 print(Fore.RED + f.renderText("Exiting"))
                 quit()
 
-            elif option == 7:
-                rolling_window(5, freq_hz)
             else:
                 print(Fore.RED + "Select an option")
 

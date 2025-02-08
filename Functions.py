@@ -62,7 +62,7 @@ def view_CSV(file_path, num_rows):
         reader_obj = csv.reader(file, delimiter=',', quotechar='|')
         for i, row in enumerate(reader_obj):
             print(', '.join(row))
-            if i + 1 >= num_rows:  # Stop after printing `num_rows`
+            if i + 1 >= num_rows: 
                 break
  
 
@@ -70,7 +70,7 @@ def view_CSV(file_path, num_rows):
 
 
 def rolling_window(seconds, frequency):
-    file = 'rolling_test.dat'
+    file = 'iq_samples.dat'
     iq_data = np.fromfile(file, dtype=np.complex64)
     fs = 1_000_000
     sdr = RtlSdr()
@@ -94,7 +94,7 @@ def rolling_window(seconds, frequency):
                 break
 
         captured_samples_np = np.array(captured_samples, dtype=np.complex64)
-        output_path = 'rolling_test.dat'
+        output_path = 'iq_samples.dat'
         captured_samples_np.tofile(output_path)
         feature_extraction(iq_data, frequency)
         export_csv(iq_data, frequency, fs)
