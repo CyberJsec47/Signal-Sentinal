@@ -43,9 +43,13 @@ def find_entropy(sample_file):
 
 
 def find_psd(sample_file, sample_rate):
-    psd = welch(sample_file, sample_rate, nperseg=1024, return_onesided=False)
-    avg_mag = np.mean(psd)
-    return avg_mag
+    if np.all(sample_file == 0):
+        print("Warning: Input signal is silent")
+        return -np.inf
+    sample_file = sample_file / np.max(np.abs(sample_file))
+    f, psd = welch(sample_file, sample_rate, nperseg=1024, return_onesided=True)
+    avg_psd = np.mean(np.log10(psd + 1e-10))  
+    return avg_psd
 
 
 def find_amplitude(sample_file):
