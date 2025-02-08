@@ -50,8 +50,9 @@ def main(frequency):
             if option == 1:
                 print(Fore.GREEN + "Choose how long to capture for: (seconds)")
                 seconds = int(input(Fore.GREEN + "Time in Seconds: "))
+                classification = input(Fore.GREEN + "Is this signal Safe or Jamming?: ")
                 print(Fore.GREEN + f"Capturing on frequency {freq_hz} MHz for {seconds} seconds")
-                rolling_window(seconds, freq_hz)
+                rolling_window(seconds, freq_hz, classification)
 
                 new = input(Fore.GREEN + "Redo signal capture? 'y' or 'n': ")
                 if new == ('y' or 'Y'):

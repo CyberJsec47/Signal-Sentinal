@@ -1,6 +1,6 @@
 import csv
 import numpy as np 
-from scipy.stats import entropy
+from scipy.stats import entropy, skew, kurtosis
 from scipy.signal import welch
 import colorama
 from colorama import Fore
@@ -54,6 +54,19 @@ def find_amplitude(sample_file):
     return amplitude
 
 
+def find_rms(sample_file):
+    rms = np.sqrt(np.mean(np.abs(sample_file)**2))
+    return rms
+
+
+def find_skewness(sample_file):
+    return skew(sample_file)
+
+
+def find_kurtosis(sample_file):
+    return kurtosis(sample_file)
+
+
 def feature_extraction(sample_file, frequency):
 
     Freq = frequency
@@ -63,14 +76,16 @@ def feature_extraction(sample_file, frequency):
     Entropy = find_entropy(sample_file)
     PSD = find_psd(sample_file, fs)
     Amplitude = find_amplitude(sample_file)
+    RMS = find_rms(sample_file)
 
     print(Fore.BLUE + f"Frequency:{Fore.GREEN}{Freq}\n{Fore.BLUE}Signal to Noise ratio:{Fore.GREEN}{SNR}\n{Fore.BLUE}Magnitude:{Fore.GREEN}{Mag}\n{Fore.BLUE}Phase:{Fore.GREEN}"
-                      f"{Phase}\n{Fore.BLUE}Entropy:{Fore.GREEN}{Entropy}\n{Fore.BLUE}Power Spectral Density:{Fore.GREEN}{PSD}\n{Fore.BLUE}Amplitude:{Fore.GREEN}{Amplitude}")
+                      f"{Phase}\n{Fore.BLUE}Entropy:{Fore.GREEN}{Entropy}\n{Fore.BLUE}Power Spectral Density:{Fore.GREEN}{PSD}\n{Fore.BLUE}Amplitude:{Fore.GREEN}{Amplitude}"
+                      f"\n{Fore.BLUE}RMS: {Fore.GREEN}{RMS}")
 
 
-def export_csv(sample_file, frequency, fs):
+def export_csv(sample_file, frequency, fs, time, classification):
 
-    output_file='Safe_signals.csv'
+    output_file='Features.csv'
 
     features = {
         'Frequency': frequency,
@@ -80,7 +95,9 @@ def export_csv(sample_file, frequency, fs):
         'Entropy': find_entropy(sample_file),
         'PSD': find_psd(sample_file, fs),
         'Amplitude': find_amplitude(sample_file),
-        'Signal': "Safe"
+        'RMS': find_rms(sample_file),
+        'Duration': time,
+        'Signal': classification
     }
 
     file_exists = os.path.isfile(output_file)
