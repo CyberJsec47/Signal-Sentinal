@@ -59,14 +59,6 @@ def find_rms(sample_file):
     return rms
 
 
-def find_skewness(sample_file):
-    return skew(sample_file)
-
-
-def find_kurtosis(sample_file):
-    return kurtosis(sample_file)
-
-
 def feature_extraction(sample_file, frequency):
 
     Freq = frequency
@@ -85,7 +77,7 @@ def feature_extraction(sample_file, frequency):
 
 def export_csv(sample_file, frequency, fs, time, classification):
 
-    output_file='Features.csv'
+    output_file='Training_data.csv'
 
     features = {
         'Frequency': frequency,

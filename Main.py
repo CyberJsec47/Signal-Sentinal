@@ -53,16 +53,8 @@ def main(frequency):
                 classification = input(Fore.GREEN + "Is this signal Safe or Jamming?: ")
                 print(Fore.GREEN + f"Capturing on frequency {freq_hz} MHz for {seconds} seconds")
                 rolling_window(seconds, freq_hz, classification)
-
-                new = input(Fore.GREEN + "Redo signal capture? 'y' or 'n': ")
-                if new == ('y' or 'Y'):
-                    seconds = int(input(Fore.GREEN + "Time in Seconds: "))
-                    print(Fore.GREEN + f"Capturing on frequency {freq_hz} MHZ for {seconds} seconds")
-                    get_signal(seconds, freq_hz)
-                    feature_extraction(iq_data, freq_hz)
-                    continue
-                else:
-                    main(freq)
+                input(Fore.GREEN + "\nPress Enter to return to the menu...")
+                continue
 
             elif option == 2:
                 print(Fore.YELLOW + "Changing frequency...")
