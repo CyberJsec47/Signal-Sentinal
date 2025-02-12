@@ -104,3 +104,23 @@ def rolling_window(seconds, frequency, classification):
         export_csv(iq_data, frequency, fs, seconds, classification)
 
 
+def visualise_signal(file, freq_hz):
+
+    file_path = file
+
+    samples = np.fromfile(file, dtype=np.complex64)
+
+    fs = 1e6
+    fc = freq_hz
+
+    N = len(samples)
+    fft_data = np.fft.fftshift(np.abs(np.fft.fft(samples))**2)
+    freqs = np.fft.fftshift(np.fft.fftfreq(N, 1 / fs)) + fc  
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(freqs / 1e6, 10 * np.log10(fft_data))  
+    plt.xlabel("Frequency (MHz)")
+    plt.ylabel("Power (dB)")
+    plt.title(f"FFT Spectrum (Centered at {fc/1e6} MHz)")
+    plt.grid()
+    plt.show()

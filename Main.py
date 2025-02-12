@@ -39,9 +39,11 @@ def main(frequency):
             print(Fore.BLUE + "-" * 25)
             print(Fore.GREEN + "| Change frequency    [2] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| View CSV sample     [3] |")
+            print(Fore.GREEN + "| Visualise signal    [3] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Exit                [4] |")
+            print(Fore.GREEN + "| View CSV sample     [4] |")
+            print(Fore.BLUE + "-" * 25)
+            print(Fore.GREEN + "| Exit                [5] |")
             print(Fore.BLUE + "-" * 25)
 
             option = int(input(Fore.GREEN + "| Choose an option: "))
@@ -63,13 +65,19 @@ def main(frequency):
                 continue 
 
             elif option == 3:
+                print(Fore.GREEN + "Generating FFT plot...")
+                visualise_signal("iq_samples.dat", freq_hz)
+                input(Fore.GREEN + "\nPress Enter to return to the menu...")
+                continue
+
+            elif option == 4:
                 print("Getting CSV file samples...")
-                view_CSV('Safe_signals.csv', 20)
+                view_CSV('Training_data.csv', 20)
                 input(Fore.GREEN + "\nPress Enter to return to the menu...")
                 continue
 
 
-            elif option == 4:
+            elif option == 5:
                 print(Fore.RED + f.renderText("Exiting"))
                 quit()
 
