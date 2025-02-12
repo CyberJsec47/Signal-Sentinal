@@ -1,6 +1,6 @@
 import csv
 import numpy as np 
-from scipy.stats import entropy, skew, kurtosis
+from scipy.stats import entropy
 from scipy.signal import welch
 import colorama
 from colorama import Fore
