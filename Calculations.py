@@ -8,10 +8,12 @@ import os
 
 
 colorama.init(autoreset=True)
-
+# settings for file location, converting the raw data to a complex64 number, sample rate and rtl gain
+# rtl is experimental needs to be adjusted when dongle is back in use
 file = 'iq_samples.dat'
 iq_data = np.fromfile(file, dtype=np.complex64)
 fs = 1_000_000
+rtl_gain = 20.0
 
 
 def calculate_snr(sample_file):
@@ -62,6 +64,15 @@ def find_rms(sample_file):
     rms = np.sqrt(np.mean(np.abs(sample_file)**2))
     return rms
 
+def find_dBm(sample_file, gain_dB=0):
+    mag = np.abs(sample_file)
+    power_linear = mag**2
+    power_linear[power_linear == 0] = 1e-12
+    calibration_factor = -30 + gain_dB
+    power_dBm = 10 * np.log10(power_linear) + calibration_factor
+    avg_power_dBm = 10 * np.log10(np.mean(power_linear)) + calibration_factor
+    return round(avg_power_dBm,2)
+
 
 def feature_extraction(sample_file, frequency):
 
@@ -73,10 +84,11 @@ def feature_extraction(sample_file, frequency):
     PSD = find_psd(sample_file, fs)
     Amplitude = find_amplitude(sample_file)
     RMS = find_rms(sample_file)
+    avg_dBm = find_dBm(sample_file, rtl_gain)
 
     print(Fore.BLUE + f"Frequency:{Fore.GREEN}{Freq}\n{Fore.BLUE}Signal to Noise ratio:{Fore.GREEN}{SNR}\n{Fore.BLUE}Magnitude:{Fore.GREEN}{Mag}\n{Fore.BLUE}Phase:{Fore.GREEN}"
                       f"{Phase}\n{Fore.BLUE}Entropy:{Fore.GREEN}{Entropy}\n{Fore.BLUE}Power Spectral Density:{Fore.GREEN}{PSD}\n{Fore.BLUE}Amplitude:{Fore.GREEN}{Amplitude}"
-                      f"\n{Fore.BLUE}RMS: {Fore.GREEN}{RMS}")
+                      f"\n{Fore.BLUE}RMS: {Fore.GREEN}{RMS}\n{Fore.BLUE}dBm: {Fore.GREEN}{avg_dBm:.2f}")
 
 
 def export_csv(sample_file, frequency, fs, time, classification):
@@ -87,6 +99,7 @@ def export_csv(sample_file, frequency, fs, time, classification):
         'Frequency': frequency,
         'Signal To Noise': calculate_snr(sample_file),
         'Max Magnitude': max_mag(sample_file),
+        'Avg dBm': find_dBm(sample_file, rtl_gain),
         'Average Phase': sig_phase(sample_file),
         'Entropy': find_entropy(sample_file),
         'PSD': find_psd(sample_file, fs),
@@ -110,6 +123,3 @@ def export_csv(sample_file, frequency, fs, time, classification):
 
     except Exception as e:
         print(f"Error writing to CSV: {e}")
-
-
-    
