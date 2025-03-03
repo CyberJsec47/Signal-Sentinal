@@ -6,6 +6,8 @@ from colorama import Fore
 import csv
 from Calculations import *
 import matplotlib.pyplot as plt 
+import ast
+import pandas as pd
 
 
 def freq_select():
@@ -106,7 +108,6 @@ def rolling_window(seconds, frequency, classification):
 
 def visualise_signal(file, freq_hz):
 
-    file_path = file
 
     samples = np.fromfile(file, dtype=np.complex64)
 
@@ -124,3 +125,21 @@ def visualise_signal(file, freq_hz):
     plt.title(f"FFT Spectrum (Centered at {fc/1e6} MHz)")
     plt.grid()
     plt.show()
+
+
+def convert_to_dat(row):
+
+    row_index = row
+    df = pd.read_csv("Filtered_data.csv", skiprows=row_index, nrows=1, header=None)
+    df.columns = ["Frequency", "I/Q Data"]
+    frequency = df["Frequency"].iloc[0]
+    iq_data = ast.literal_eval(df["I/Q Data"].iloc[0])
+    iq_array = np.array(iq_data, dtype=np.complex64)
+    iq_array.tofile("new_iq_samples.dat")
+    print(f"Frequency = {frequency}")
+    print(f"Success, row number {row} converted to dat as new_iq_sample.dat")
+
+    return frequency
+
+
+

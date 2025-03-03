@@ -91,7 +91,7 @@ def feature_extraction(sample_file, frequency):
                       f"\n{Fore.BLUE}RMS: {Fore.GREEN}{RMS}\n{Fore.BLUE}dBm: {Fore.GREEN}{avg_dBm:.2f}")
 
 
-def export_csv(sample_file, frequency, fs, time, classification):
+def export_csv(sample_file, frequency, fs, classification):
 
     output_file='Training_data.csv'
 
@@ -105,7 +105,6 @@ def export_csv(sample_file, frequency, fs, time, classification):
         'PSD': find_psd(sample_file, fs),
         'Amplitude': find_amplitude(sample_file),
         'RMS': find_rms(sample_file),
-        'Duration': time,
         'Signal': classification
     }
 
