@@ -4,7 +4,7 @@ from colorama import Fore
 import numpy as np
 from Functions import *
 
-file = 'iq_samples.dat'
+file = 'Jamming_raw_iq.dat'
 iq_data = np.fromfile(file, dtype=np.complex64)
 fs = 1_000_000
 
@@ -50,7 +50,9 @@ def main(frequency):
             print(Fore.BLUE + "-" * 25)
             print(Fore.GREEN + "| Convert Mat data    [6] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Exit                [7] |")
+            print(Fore.GREEN + "| Add jamming to CSV  [7] |")
+            print(Fore.BLUE + "-" * 25)
+            print(Fore.GREEN + "| Exit                [8] |")
             print(Fore.BLUE + "-" * 25)
 
             option = int(input(Fore.GREEN + "| Choose an option: "))
@@ -106,8 +108,16 @@ def main(frequency):
                 filename = input("Type a file to convert: ")
                 mat_to_dat(filename)
 
-
             elif option == 7:
+                print(Fore.YELLOW + "CChoose the jammed frequnecy")
+                freq_hz = freq_select()
+                print(Fore.GREEN + f"Frequency set: {freq_hz} MHz")
+                classification = "Jamming"  
+                gen_jam_data(freq_hz, classification)
+                continue
+
+
+            elif option == 8:
                 print(Fore.RED + f.renderText("Exiting"))
                 quit()
 

@@ -14,6 +14,8 @@ file = 'iq_samples.dat'
 iq_data = np.fromfile(file, dtype=np.complex64)
 fs = 1_000_000
 rtl_gain = 20.0
+jam_file = 'Jamming_raw_iq.dat'
+jam_iq = np.fromfile(jam_file, dtype=np.complex64)
 
 
 def calculate_snr(sample_file):

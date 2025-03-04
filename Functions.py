@@ -70,7 +70,7 @@ def view_CSV(file_path, num_rows):
                 break
  
 
-            
+       
 
 
 def rolling_window(seconds, frequency, classification):
@@ -173,3 +173,11 @@ def mat_to_dat(filename):
         iq_data.tofile(output_file)
         print(f"Saved mat file to {output_file}")
     
+
+def gen_jam_data(frequency, classification):
+
+    fs = 1_000_000
+    jam_file = 'Jamming_raw_iq.dat'
+    jam_iq = np.fromfile(jam_file, dtype=np.complex64)
+    feature_extraction(jam_iq, frequency)
+    export_csv(jam_iq, frequency, fs, classification)
