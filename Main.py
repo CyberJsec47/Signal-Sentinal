@@ -48,7 +48,9 @@ def main(frequency):
             print(Fore.BLUE + "-" * 25)
             print(Fore.GREEN + "| Convert CSV data    [5] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Exit                [6] |")
+            print(Fore.GREEN + "| Convert Mat data    [6] |")
+            print(Fore.BLUE + "-" * 25)
+            print(Fore.GREEN + "| Exit                [7] |")
             print(Fore.BLUE + "-" * 25)
 
             option = int(input(Fore.GREEN + "| Choose an option: "))
@@ -83,7 +85,7 @@ def main(frequency):
 
             elif option ==  5:
                     num_rows_to_process = 250
-                    start_row = 2
+                    start_row = 300
                     end_row = start_row + num_rows_to_process - 1
 
                     for row in range(start_row, end_row + 1):
@@ -100,9 +102,12 @@ def main(frequency):
                             print(f"Error processing row {row}: {e}")
                             continue 
 
-
-
             elif option == 6:
+                filename = input("Type a file to convert: ")
+                mat_to_dat(filename)
+
+
+            elif option == 7:
                 print(Fore.RED + f.renderText("Exiting"))
                 quit()
 

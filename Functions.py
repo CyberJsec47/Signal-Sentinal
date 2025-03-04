@@ -8,6 +8,9 @@ from Calculations import *
 import matplotlib.pyplot as plt 
 import ast
 import pandas as pd
+import scipy.io
+import os
+
 
 
 def freq_select():
@@ -143,3 +146,30 @@ def convert_to_dat(row):
 
 
 
+def mat_to_dat(filename):
+
+    mat_data = scipy.io.loadmat(filename)
+
+    print("Variables found in mat file:", mat_data.keys())
+
+    for key, value in mat_data.items():
+        if not key.startswith("__"):
+            print(f"\nVariables name: {key}")
+            print(value)
+
+
+
+    mat_file = filename
+    data = scipy.io.loadmat(mat_file)
+    iq_data = data.get('GNSS_plus_Jammer_awgn', None)
+
+    if iq_data is None:
+        print("Variable 'GNSS_plus_Jammer_awgn' not found in mat file")
+    else:
+        iq_data = np.array(iq_data, dtype=np.complex64)
+
+        project_dir = os.path.expanduser("~/Documents/SignalSentinel")
+        output_file = os.path.join(project_dir, 'Jamming_raw_iq.dat')
+        iq_data.tofile(output_file)
+        print(f"Saved mat file to {output_file}")
+    

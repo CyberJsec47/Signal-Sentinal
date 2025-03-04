@@ -14,4 +14,3 @@
 --- 
  ## Goal 1:
 
-##### Setting up the RF station
