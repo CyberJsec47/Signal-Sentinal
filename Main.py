@@ -86,8 +86,8 @@ def main(frequency):
                 continue
 
             elif option ==  5:
-                    num_rows_to_process = 250
-                    start_row = 300
+                    num_rows_to_process = 500
+                    start_row = 1
                     end_row = start_row + num_rows_to_process - 1
 
                     for row in range(start_row, end_row + 1):
@@ -109,13 +109,9 @@ def main(frequency):
                 mat_to_dat(filename)
 
             elif option == 7:
-                print(Fore.YELLOW + "CChoose the jammed frequnecy")
-                freq_hz = freq_select()
-                print(Fore.GREEN + f"Frequency set: {freq_hz} MHz")
-                classification = "Jamming"  
-                gen_jam_data(freq_hz, classification)
-                continue
-
+                folder_path = input("Type folder path to use: ")
+                num_files = int(input("How many files to proccess?: "))
+                auto_jam(folder_path, num_files)
 
             elif option == 8:
                 print(Fore.RED + f.renderText("Exiting"))

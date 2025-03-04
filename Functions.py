@@ -10,6 +10,7 @@ import ast
 import pandas as pd
 import scipy.io
 import os
+import random
 
 
 
@@ -158,7 +159,6 @@ def mat_to_dat(filename):
             print(value)
 
 
-
     mat_file = filename
     data = scipy.io.loadmat(mat_file)
     iq_data = data.get('GNSS_plus_Jammer_awgn', None)
@@ -172,12 +172,94 @@ def mat_to_dat(filename):
         output_file = os.path.join(project_dir, 'Jamming_raw_iq.dat')
         iq_data.tofile(output_file)
         print(f"Saved mat file to {output_file}")
-    
 
-def gen_jam_data(frequency, classification):
 
+def gen_jam_data(frequency, classification, jam_file):
     fs = 1_000_000
-    jam_file = 'Jamming_raw_iq.dat'
     jam_iq = np.fromfile(jam_file, dtype=np.complex64)
     feature_extraction(jam_iq, frequency)
     export_csv(jam_iq, frequency, fs, classification)
+    
+
+def generate_random_frequency():
+    frequency = random.uniform(433.05e6, 2e9)
+    frequency_int = int(frequency)
+    return frequency_int
+
+def process_mat_files_in_folder(folder_path, classification, max_files=None):
+    processed_files = 0
+    
+    for filename in os.listdir(folder_path):
+
+        if filename.endswith(".mat"):
+            if max_files is not None and processed_files >= max_files:
+                print(f"Reached the limit of {max_files} files. Stopping.")
+                break
+
+            full_path = os.path.join(folder_path, filename)
+            print(f"Processing file: {full_path}")
+
+            jam_file = mat_to_dat(full_path)
+            if jam_file:
+                frequency = generate_random_frequency()
+                print(f"Using frequency: {frequency / 1e6} MHz")
+                gen_jam_data(frequency, classification, jam_file)
+                processed_files += 1
+
+
+def auto_jam(folder_path, num_files):
+ 
+    def mat_to_dat(filename):
+        mat_data = scipy.io.loadmat(filename)
+
+        print("Variables found in mat file:", mat_data.keys())
+
+        for key, value in mat_data.items():
+            if not key.startswith("__"):
+                print(f"\nVariable name: {key}")
+                print(value)
+
+        mat_file = filename
+        data = scipy.io.loadmat(mat_file)
+        iq_data = data.get('GNSS_plus_Jammer_awgn', None)
+
+        if iq_data is None:
+            print(f"Variable 'GNSS_plus_Jammer_awgn' not found in {filename}")
+            return None
+        else:
+            iq_data = np.array(iq_data, dtype=np.complex64)
+
+            project_dir = os.path.expanduser("~/Documents/SignalSentinel")
+            output_file = os.path.join(project_dir, 'Jamming_raw_iq.dat')
+            iq_data.tofile(output_file)
+            print(f"Saved mat file to {output_file}")
+            return output_file
+        
+    def gen_jam_data(frequency, classification, jam_file):
+        fs = 1_000_000
+        jam_iq = np.fromfile(jam_file, dtype=np.complex64)
+        feature_extraction(jam_iq, frequency)
+        export_csv(jam_iq, frequency, fs, classification)
+
+    def generate_random_frequency():
+        frequency = random.uniform(433.05e6, 2e9)
+        frequency_int = int(frequency)
+        return frequency_int
+
+    processed_files = 0 
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".mat"):
+            if processed_files >= num_files:
+                print(f"Reached the limit of {num_files} files. Stopping.")
+                break
+
+            full_path = os.path.join(folder_path, filename)
+            print(f"Processing file: {full_path}")
+
+            jam_file = mat_to_dat(full_path)
+            if jam_file:
+                frequency = generate_random_frequency()
+                print(f"Using frequency: {frequency} Hz") 
+                classification = 'Jamming' 
+                gen_jam_data(frequency, classification, jam_file)
+                processed_files += 1
