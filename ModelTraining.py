@@ -14,7 +14,6 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 
 
- 
 def test_1():
 
     """ This first test was using random forest and results
