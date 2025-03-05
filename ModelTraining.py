@@ -14,6 +14,8 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
+from sklearn.naive_bayes import GaussianNB
+
 
 def test_1():
     # Random forest 
@@ -63,7 +65,7 @@ def test_2():
 
     df = pd.read_csv("Shuffled_dataset.csv")
 
-    X = df.drop(columns=["Frequency", "Classification"])
+    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"])
     y = df["Classification"]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -92,7 +94,7 @@ def test_3():
 
     df = pd.read_csv("Shuffled_dataset.csv")
 
-    X = df.drop(columns=["Frequency", "Classification"])
+    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"])
     y = df["Classification"]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -141,7 +143,7 @@ def test_4():
 
     df = pd.read_csv("Shuffled_dataset.csv")
 
-    X = df.drop(columns=["Frequency", "Classification"])
+    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"])
     y = df["Classification"]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -171,7 +173,7 @@ def test_5():
     """ SVM """
     df = pd.read_csv("Shuffled_dataset.csv")
 
-    X = df.drop(columns=["Frequency", "Classification"])
+    X = df.drop(columns=["Frequency", "Classification", "Avg dBm"])
     y = df["Classification"]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -192,10 +194,12 @@ def test_5():
 
 def test_6():
 
+    """ Logistic regression"""
+
     df = pd.read_csv("Shuffled_dataset.csv")
     
     
-    X = df.drop(columns=["Classification", "Frequency"]) 
+    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"])
     y = df["Classification"]
 
 
@@ -228,3 +232,44 @@ def test_6():
     plt.title('ROC Curve')
     plt.legend(loc='lower right')
     plt.show()
+
+
+def test_7():
+
+    """Naive Bayes"""
+
+    df = pd.read_csv("Shuffled_dataset.csv")
+    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"]) 
+    y = df["Classification"]
+
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    nb_model = GaussianNB()
+    nb_model.fit(X_train, y_train)
+
+    y_pred = nb_model.predict(X_test)
+
+    acc = accuracy_score(y_test, y_pred) * 100
+    print(f"Naive Bayes Model Accuracy: {acc:.2f}%")
+
+    cm = confusion_matrix(y_test, y_pred)
+    print("Confusion Matrix:\n", cm)
+    print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+    y_prob = nb_model.predict_proba(X_test)[:, 1]
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    roc_auc = auc(fpr, tpr)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='blue', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
+    plt.plot([0, 1], [0, 1], color='grey', linestyle='--')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curve - Naive Bayes')
+    plt.legend(loc='lower right')
+    plt.show()
+
+test_6()
