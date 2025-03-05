@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, roc_curve, auc
 from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,9 +12,11 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
-
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import LabelEncoder
 
 def test_1():
+    # Random forest 
 
     """ This first test was using random forest and results
     shown perfect first time which is not ideal
@@ -49,7 +51,10 @@ def test_1():
     plt.ylabel("Feature")
     plt.show()
 
+
 def test_2():
+
+    # Random forest 
 
     """Test two is the same as the first but with removing frequency as a feature, same results perfect score but feature importance shows it looks
     more into other features for a decison
@@ -183,3 +188,43 @@ def test_5():
     cv_scores = cross_val_score(svm_model, X, y, cv=5)
     print(f"Cross-Validation Scores: {cv_scores}")
     print(f"Mean Accuracy: {cv_scores.mean():.4f}")
+
+
+def test_6():
+
+    df = pd.read_csv("Shuffled_dataset.csv")
+    
+    
+    X = df.drop(columns=["Classification", "Frequency"]) 
+    y = df["Classification"]
+
+
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(y) 
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    clf = LogisticRegression(max_iter=10000, random_state=0)
+    clf.fit(X_train, y_train)
+    train_acc = clf.score(X_train, y_train)
+    test_acc = clf.score(X_test, y_test)
+    print(f"Training accuracy: {train_acc:.4f}")
+    print(f"Test Accuracy: {test_acc:.4f}")
+
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(X_train.corr(), annot=True, cmap='coolwarm', linewidths=0.5)
+    plt.title("Feature Correlation Matrix")
+    plt.show()
+
+    y_prob = clf.predict_proba(X_test)[:, 1] 
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    roc_auc = auc(fpr, tpr)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='blue', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
+    plt.plot([0, 1], [0, 1], color='grey', linestyle='--') 
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curve')
+    plt.legend(loc='lower right')
+    plt.show()
