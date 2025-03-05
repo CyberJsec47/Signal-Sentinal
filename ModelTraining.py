@@ -271,5 +271,3 @@ def test_7():
     plt.title('ROC Curve - Naive Bayes')
     plt.legend(loc='lower right')
     plt.show()
-
-test_6()
