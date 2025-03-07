@@ -12,3 +12,5 @@ newdata.py
 Raw_IQ_Dataset
 ModelTraining.py
 Training_data.csv
+Dataset_scaled.csv
+Dataset_standard.csv

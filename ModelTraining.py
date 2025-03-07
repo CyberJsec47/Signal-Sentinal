@@ -11,11 +11,37 @@ from sklearn.datasets import make_classification
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 from sklearn.naive_bayes import GaussianNB
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.decomposition import PCA
 
+
+def min_max_scaler():
+
+    """Function to proccess data as min max scaling and standarization"""
+
+    df = pd.read_csv("Shuffled_dataset.csv")
+    print(df.columns.tolist())
+
+    feature_columns = ['Frequency','Signal To Noise','Max Magnitude','Avg dBm','Average Phase','Entropy','PSD','Amplitude','RMS']
+    X = df[feature_columns]
+
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    scaler_std = StandardScaler()
+    X_standardized = scaler_std.fit_transform(X)
+
+    df[feature_columns] = X_scaled
+
+def visualise_datasets():
+
+    """ Visualisation of the three datasets from the standard training set, scaled and standardized. this is hopfully going to help model
+    training to produce reliable results as all tests so far are 100% accurate"""
+
+    
 
 def test_1():
     # Random forest 
