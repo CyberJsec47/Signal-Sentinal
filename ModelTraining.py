@@ -36,12 +36,36 @@ def min_max_scaler():
 
     df[feature_columns] = X_scaled
 
+
 def visualise_datasets():
 
     """ Visualisation of the three datasets from the standard training set, scaled and standardized. this is hopfully going to help model
     training to produce reliable results as all tests so far are 100% accurate"""
 
-    
+    original_df = pd.read_csv("Shuffled_dataset.csv")
+    minmax_df = pd.read_csv("Dataset_scaled.csv")
+    standardized_df = pd.read_csv("Dataset_standard.csv")
+
+    label_column = "Classification"
+    if label_column in original_df.columns:
+        original_df = original_df.drop(columns=[label_column])
+    if label_column in minmax_df.columns:
+        minmax_df = minmax_df.drop(columns=[label_column])
+    if label_column in standardized_df.columns:
+        standardized_df = standardized_df.drop(columns=[label_column])
+
+    features = ['Frequency', 'Signal To Noise', 'Max Magnitude', 'Avg dBm', 'Average Phase',
+                'Entropy', 'PSD', 'Amplitude', 'RMS']
+
+    summary_df = pd.DataFrame({
+        "Dataset": ["Original", "Min-Max Scaled", "Standardized"],
+        "Mean": [original_df.mean().mean(), minmax_df.mean().mean(), standardized_df.mean().mean()],    
+        "Std Dev": [original_df.std().mean(), minmax_df.std().mean(), standardized_df.std().mean()]
+    })
+
+    print(summary_df)
+
+
 
 def test_1():
     # Random forest 
