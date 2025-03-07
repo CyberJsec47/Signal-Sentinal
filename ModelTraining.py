@@ -16,6 +16,10 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.decomposition import PCA
+from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+from imblearn.over_sampling import SMOTE
+
 
 
 def min_max_scaler():
@@ -66,7 +70,6 @@ def visualise_datasets():
     print(summary_df)
 
 
-
 def test_1():
     # Random forest 
 
@@ -77,7 +80,7 @@ def test_1():
     was using frequecy as it most important feature which for what this project is is no help as a safe and jamming signal can both be on the same frequency
     """
 
-    df = pd.read_csv('Shuffled_dataset.csv')
+    df = pd.read_csv('Dataset_standard.csv')
     X = df.drop(columns=["Classification"])
     y = df["Classification"]
 
@@ -113,9 +116,9 @@ def test_2():
     next tests are to be made with other models to see perforamce changes
     """
 
-    df = pd.read_csv("Shuffled_dataset.csv")
+    df = pd.read_csv("Dataset_standardized.csv")
 
-    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"])
+    X = df.drop(columns=["Classification"])
     y = df["Classification"]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -142,9 +145,9 @@ def test_3():
 
     """ Decision tree """
 
-    df = pd.read_csv("Shuffled_dataset.csv")
+    df = pd.read_csv("Dataset_standardized.csv")
 
-    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"])
+    X = df.drop(columns=["Classification"])
     y = df["Classification"]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -191,9 +194,9 @@ def test_4():
 
     """ KNN """
 
-    df = pd.read_csv("Shuffled_dataset.csv")
-
-    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"])
+    
+    df = pd.read_csv("Dataset_standardized.csv")
+    X = df.drop(columns=["Classification"])
     y = df["Classification"]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -211,45 +214,74 @@ def test_4():
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Safe", "Jamming"])
     disp.plot(cmap="Blues")
     plt.title("KNN Confusion MAtrix")
-    plt.show()
+    #plt.show()
+    print("Confusion Matrix:\n", cm)
 
-    cv_scores = cross_val_score(knn_model, X, y, cv=5)
-    print(f"Cross validation scores: {cv_scores}")
-    print(f"Mean Accruacy: {cv_scores.mean():.4f}")
+
+    print("Class distribution in y_train:")
+    print(y_train.value_counts())
+
+    print("Class distribution in y_test:")
+    print(y_test.value_counts())
+
+    corr_matrix = X.corr()
+    print(corr_matrix)
+
+
+    cv_scores = cross_val_score(knn_model, X_train_Scaled, y_train, cv=5)
+    print(f"Cross-validation scores (scaled data): {cv_scores}")
+    print(f"Mean Cross-validation Accuracy: {cv_scores.mean():.4f}")
+
+    precision = precision_score(y_test, y_pred, pos_label="Jamming", average="binary")
+    recall = recall_score(y_test, y_pred, pos_label="Jamming", average="binary")
+    f1 = f1_score(y_test, y_pred, pos_label="Jamming", average="binary")
+    auc = roc_auc_score(y_test, knn_model.predict_proba(X_test_Scaled)[:, 1])
+
+    print(f"Precision: {precision:.4f}")
+    print(f"Recall: {recall:.4f}")
+    print(f"F1 Score: {f1:.4f}")
+    print(f"AUC: {auc:.4f}")
+
+    strat_kfold = StratifiedKFold(n_splits=5)
+    strat_cv_scores = cross_val_score(knn_model, X_train_Scaled, y_train, cv=strat_kfold)
+    print(f"Stratified Cross-validation scores: {strat_cv_scores}")
+    print(f"Mean Stratified Cross-validation Accuracy: {strat_cv_scores.mean():.4f}")
 
 
 def test_5():
-
     """ SVM """
-    df = pd.read_csv("Shuffled_dataset.csv")
+ 
+    df = pd.read_csv("Dataset_standardized.csv")
 
-    X = df.drop(columns=["Frequency", "Classification", "Avg dBm"])
+    X = df.drop(columns=["Classification"])
     y = df["Classification"]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    scaler = StandardScaler()
-    X_train_Scaled = scaler.fit_transform(X_train)
-    X_test_Scaled = scaler.transform(X_test)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
     svm_model = SVC(kernel='linear', random_state=42)
-    svm_model.fit(X_train_Scaled, y_train)
 
-    y_pred = svm_model.predict(X_test_Scaled)
+    svm_model.fit(X_train, y_train)
+
+    y_pred = svm_model.predict(X_test)
 
     print(classification_report(y_test, y_pred))
+
     cv_scores = cross_val_score(svm_model, X, y, cv=5)
     print(f"Cross-Validation Scores: {cv_scores}")
     print(f"Mean Accuracy: {cv_scores.mean():.4f}")
+
+
+test_5()
 
 
 def test_6():
 
     """ Logistic regression"""
 
-    df = pd.read_csv("Shuffled_dataset.csv")
+    df = pd.read_csv("Dataset_standardized.csv")
     
     
-    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"])
+    X = df.drop(columns=["Classification"])
     y = df["Classification"]
 
 
@@ -288,8 +320,8 @@ def test_7():
 
     """Naive Bayes"""
 
-    df = pd.read_csv("Shuffled_dataset.csv")
-    X = df.drop(columns=["Frequency", "Classification", "Avg dBm", "Average Phase", "Entropy", "Signal To Noise"]) 
+    df = pd.read_csv("Dataset_standardized.csv")
+    X = df.drop(columns=["Classification"]) 
     y = df["Classification"]
 
     label_encoder = LabelEncoder()
@@ -321,3 +353,4 @@ def test_7():
     plt.title('ROC Curve - Naive Bayes')
     plt.legend(loc='lower right')
     plt.show()
+

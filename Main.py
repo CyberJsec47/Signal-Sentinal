@@ -86,8 +86,8 @@ def main(frequency):
                 continue
 
             elif option ==  5:
-                    num_rows_to_process = 500
-                    start_row = 1
+                    num_rows_to_process = 20
+                    start_row = 10000
                     end_row = start_row + num_rows_to_process - 1
 
                     for row in range(start_row, end_row + 1):
