@@ -281,8 +281,6 @@ def test_5():
     print("Model and scaler saved.")
 
 
-test_5()
-
 
 def test_6():
 

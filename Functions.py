@@ -71,8 +71,6 @@ def view_CSV(file_path, num_rows):
                 break
  
 
-       
-
 
 def rolling_window(seconds, frequency, classification):
 
@@ -275,9 +273,9 @@ def test_model_with_file(iq_data, frequency, fs, rtl_gain):
     with open("scaler.pkl", "rb") as scaler_file:
         scaler = pickle.load(scaler_file)
 
-    extracted_features = feature_extraction(iq_data, frequency, fs, rtl_gain) 
-    
-    extracted_features_scaled = scaler.transform([extracted_features]) 
+    extracted_features_df = feature_extraction(iq_data, frequency, fs, rtl_gain)
+
+    extracted_features_scaled = scaler.transform(extracted_features_df)
 
     prediction = svm_model.predict(extracted_features_scaled)
     print(f"Predicted Class: {prediction[0]}")
