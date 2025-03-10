@@ -19,6 +19,7 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold
 from imblearn.over_sampling import SMOTE
+import pickle
 
 
 
@@ -249,26 +250,35 @@ def test_4():
 
 
 def test_5():
-    """ SVM """
- 
+    """Train, Standardize, and Export SVM Model"""
+
     df = pd.read_csv("Dataset_standardized.csv")
 
     X = df.drop(columns=["Classification"])
     y = df["Classification"]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)  
+
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42)
 
     svm_model = SVC(kernel='linear', random_state=42)
-
     svm_model.fit(X_train, y_train)
 
     y_pred = svm_model.predict(X_test)
-
     print(classification_report(y_test, y_pred))
 
-    cv_scores = cross_val_score(svm_model, X, y, cv=5)
+    cv_scores = cross_val_score(svm_model, X_scaled, y, cv=5)
     print(f"Cross-Validation Scores: {cv_scores}")
     print(f"Mean Accuracy: {cv_scores.mean():.4f}")
+
+    with open("svm_jamming_detector.pkl", "wb") as model_file:
+        pickle.dump(svm_model, model_file)
+    
+    with open("scaler.pkl", "wb") as scaler_file:
+        pickle.dump(scaler, scaler_file)
+
+    print("Model and scaler saved.")
 
 
 test_5()

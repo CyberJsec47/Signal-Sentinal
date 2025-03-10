@@ -76,8 +76,12 @@ def find_dBm(sample_file, gain_dB=0):
     return round(avg_power_dBm,2)
 
 
-def feature_extraction(sample_file, frequency):
-
+def feature_extraction(sample_file, frequency, fs, rtl_gain):
+    """
+    Extract features from the sample_file and return them as a list/array
+    to be standardized and input into the model.
+    """
+    # Extract various features
     Freq = frequency
     SNR = calculate_snr(sample_file)
     Mag = max_mag(sample_file)
@@ -88,9 +92,14 @@ def feature_extraction(sample_file, frequency):
     RMS = find_rms(sample_file)
     avg_dBm = find_dBm(sample_file, rtl_gain)
 
-    print(Fore.BLUE + f"Frequency:{Fore.GREEN}{Freq}\n{Fore.BLUE}Signal to Noise ratio:{Fore.GREEN}{SNR}\n{Fore.BLUE}Magnitude:{Fore.GREEN}{Mag}\n{Fore.BLUE}Phase:{Fore.GREEN}"
-                      f"{Phase}\n{Fore.BLUE}Entropy:{Fore.GREEN}{Entropy}\n{Fore.BLUE}Power Spectral Density:{Fore.GREEN}{PSD}\n{Fore.BLUE}Amplitude:{Fore.GREEN}{Amplitude}"
+    # Print extracted features (for debugging or visualization)
+    print(Fore.BLUE + f"Frequency: {Fore.GREEN}{Freq}\n{Fore.BLUE}Signal to Noise ratio: {Fore.GREEN}{SNR}\n{Fore.BLUE}Magnitude: {Fore.GREEN}{Mag}\n{Fore.BLUE}Phase: {Fore.GREEN}"
+                      f"{Phase}\n{Fore.BLUE}Entropy: {Fore.GREEN}{Entropy}\n{Fore.BLUE}Power Spectral Density: {Fore.GREEN}{PSD}\n{Fore.BLUE}Amplitude: {Fore.GREEN}{Amplitude}"
                       f"\n{Fore.BLUE}RMS: {Fore.GREEN}{RMS}\n{Fore.BLUE}dBm: {Fore.GREEN}{avg_dBm:.2f}")
+
+    # Return the features as a list/array for further processing
+    return [SNR, Mag, Phase, Entropy, PSD, Amplitude, RMS, avg_dBm]
+
 
 
 def export_csv(sample_file, frequency, fs, classification):

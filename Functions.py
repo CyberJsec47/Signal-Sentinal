@@ -11,7 +11,7 @@ import pandas as pd
 import scipy.io
 import os
 import random
-
+import pickle
 
 
 def freq_select():
@@ -82,7 +82,7 @@ def rolling_window(seconds, frequency, classification):
     try:
         freq = sdr.center_freq = frequency
         fs = sdr.fs = 1e6
-        sdr.gain = 'auto'
+        rtl_gain = sdr.gain = 'auto'
 
         total_samples = int(seconds * fs)
         chunk_size = 256 * 1024
@@ -106,12 +106,11 @@ def rolling_window(seconds, frequency, classification):
 
         file = 'iq_samples.dat'
         iq_data = np.fromfile(file, dtype=np.complex64)
-        feature_extraction(iq_data, frequency)
+        feature_extraction(iq_data, frequency, fs, rtl_gain)
         export_csv(iq_data, frequency, fs, seconds, classification)
 
 
 def visualise_signal(file, freq_hz):
-
 
     samples = np.fromfile(file, dtype=np.complex64)
 
@@ -241,6 +240,7 @@ def auto_jam(folder_path, num_files):
         feature_extraction(jam_iq, frequency)
         export_csv(jam_iq, frequency, fs, classification)
 
+
     def generate_random_frequency():
         frequency = random.uniform(433.05e6, 2e9)
         frequency_int = int(frequency)
@@ -263,3 +263,21 @@ def auto_jam(folder_path, num_files):
                 classification = 'Jamming' 
                 gen_jam_data(frequency, classification, jam_file)
                 processed_files += 1
+
+
+
+def test_model_with_file(iq_data, frequency, fs, rtl_gain):
+    """Test the SVM model with a .dat file after extracting and standardizing features"""
+
+    with open("svm_jamming_detector.pkl", "rb") as model_file:
+        svm_model = pickle.load(model_file)
+
+    with open("scaler.pkl", "rb") as scaler_file:
+        scaler = pickle.load(scaler_file)
+
+    extracted_features = feature_extraction(iq_data, frequency, fs, rtl_gain) 
+    
+    extracted_features_scaled = scaler.transform([extracted_features]) 
+
+    prediction = svm_model.predict(extracted_features_scaled)
+    print(f"Predicted Class: {prediction[0]}")

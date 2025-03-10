@@ -42,7 +42,7 @@ def main(frequency):
             print(Fore.BLUE + "-" * 25)
             print(Fore.GREEN + "| Visualise signal    [3] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| View CSV sample     [4] |")
+            print(Fore.GREEN + "| Test model          [4] |")
             print(Fore.BLUE + "-" * 25)
             print(Fore.RED + "Only needed if adding more data to SAFE label set")
             print(Fore.BLUE + "-" * 25)
@@ -80,8 +80,9 @@ def main(frequency):
                 continue
 
             elif option == 4:
-                print("Getting CSV file samples...")
-                view_CSV('Training_data.csv', 20)
+                file = "/home/josh/Documents/SignalSentinel/SyntheticJamming/SineWave.dat"
+                iq_data = np.fromfile(file, dtype=np.complex64)
+                test_model_with_file(iq_data, frequency, fs, rtl_gain)
                 input(Fore.GREEN + "\nPress Enter to return to the menu...")
                 continue
 

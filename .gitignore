@@ -17,3 +17,6 @@ Dataset_standard.csv
 Dataset_shuffled.csv
 Dataset_standardized.csv
 Training_data.csv
+SyntheticJamming
+scaler.pkl
+svm_jamming_detector.pkl
