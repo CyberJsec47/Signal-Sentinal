@@ -80,7 +80,7 @@ def main(frequency):
                 continue
 
             elif option == 4:
-                file = "/home/josh/Documents/SignalSentinel/SyntheticJamming/SineWave.dat"
+                file = "SyntheticJamming/SineWave.dat"
                 iq_data = np.fromfile(file, dtype=np.complex64)
                 test_model_with_file(iq_data, frequency, fs, rtl_gain)
                 input(Fore.GREEN + "\nPress Enter to return to the menu...")
