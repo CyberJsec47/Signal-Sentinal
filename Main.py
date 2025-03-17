@@ -80,9 +80,13 @@ def main(frequency):
                 continue
 
             elif option == 4:
-                file = "SyntheticJamming/SineWave.dat"
+                print(Fore.GREEN + "Choose how long to capture for: (seconds)")
+                seconds = int(input(Fore.GREEN + "Time in Seconds: "))
+                rolling_window(seconds, freq_hz)
+                file = 'iq_samples.dat'
                 iq_data = np.fromfile(file, dtype=np.complex64)
-                test_model_with_file(iq_data, frequency, fs, rtl_gain)
+                rtl_gain = 30  
+                test_with_KNN(iq_data, freq_hz, fs, rtl_gain)
                 input(Fore.GREEN + "\nPress Enter to return to the menu...")
                 continue
 

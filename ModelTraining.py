@@ -185,17 +185,17 @@ def test_3():
     plt.show()
 
     plt.figure(figsize=(15, 10))
-    plot_tree(dt_model, feature_names=X.columns, class_names=["Safe", "Jamming"], filled=True)
+    plot_tree(dt_model, feature_names=X_selected, class_names=["Safe", "Jamming"], filled=True)
     plt.title("Decision Tree Visuals")
     plt.show()
 
-    cv_scores = cross_val_score(dt_model, X, y, cv=5)
+    cv_scores = cross_val_score(dt_model, X_selected, y, cv=5)
     print(f"Cross validation scores: {cv_scores}")
     print(f"Mean Accruacy: {cv_scores.mean():.4f}")
 
     feature_importances = dt_model.feature_importances_
     sorted_indices = np.argsort(feature_importances)[::-1]
-    sorted_features = X.columns[sorted_indices]
+    sorted_features = X_selected[sorted_indices]
     sorted_importances = feature_importances[sorted_indices]
 
     plt.figure(figsize=(10, 5))
@@ -212,8 +212,7 @@ def test_3():
 
 
 def test_4():
-
-    """ KNN """
+    """ KNN with Min-Max Scaling """
 
     data = pd.read_csv("preprocessed_data.csv")
 
@@ -222,9 +221,16 @@ def test_4():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    scaler = MinMaxScaler()
+
+    X_train_scaled = scaler.fit_transform(X_train)
+
+    X_test_scaled = scaler.transform(X_test)
+
     knn = KNeighborsClassifier(n_neighbors=5)
-    knn.fit(X_train, y_train)
-    y_pred = knn.predict(X_test)
+    knn.fit(X_train_scaled, y_train)
+
+    y_pred = knn.predict(X_test_scaled)
 
     accuracy = accuracy_score(y_test, y_pred)
     print(f'Accuracy: {accuracy * 100:.2f}%')
@@ -235,9 +241,10 @@ def test_4():
 
     with open("knn.pkl", "wb") as model_file:
         pickle.dump(knn, model_file)
+    with open("KNN_scaler.pkl", "wb") as scaler_file:
+        pickle.dump(scaler, scaler_file)
 
     print("Model and scaler saved.")
-
 
 def test_5():
     """Train, Standardize, and Export SVM Model"""

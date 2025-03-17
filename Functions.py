@@ -12,6 +12,7 @@ import scipy.io
 import os
 import random
 import pickle
+from sklearn.preprocessing import MinMaxScaler
 
 
 def freq_select():
@@ -72,7 +73,7 @@ def view_CSV(file_path, num_rows):
  
 
 
-def rolling_window(seconds, frequency, classification):
+def rolling_window(seconds, frequency):
 
     fs = 1_000_000
     sdr = RtlSdr()
@@ -104,10 +105,10 @@ def rolling_window(seconds, frequency, classification):
     finally:
         sdr.close()
 
-        file = 'iq_samples.dat'
-        iq_data = np.fromfile(file, dtype=np.complex64)
-        feature_extraction(iq_data, frequency, fs, rtl_gain)
-        export_csv(iq_data, frequency, fs, classification)
+        #file = 'iq_samples.dat'
+        #iq_data = np.fromfile(file, dtype=np.complex64)
+        #feature_extraction(iq_data, frequency, fs, rtl_gain)
+        #export_csv(iq_data, frequency, fs, classification)
 
 
 
@@ -185,6 +186,7 @@ def generate_random_frequency():
     frequency = random.uniform(433.05e6, 2e9)
     frequency_int = int(frequency)
     return frequency_int
+
 
 def process_mat_files_in_folder(folder_path, classification, max_files=None):
     processed_files = 0
@@ -282,3 +284,33 @@ def test_model_with_file(iq_data, frequency, fs, rtl_gain):
 
     prediction = svm_model.predict(extracted_features_scaled)
     print(f"Predicted Class: {prediction[0]}")
+
+
+def test_with_KNN(sample_file, frequency, fs, rtl_gain):
+
+    with open("/home/josh/Documents/SignalSentinel/models/knn.pkl", "rb") as model_file:
+        knn_model = pickle.load(model_file)
+    with open("/home/josh/Documents/SignalSentinel/models/KNN_scaler.pkl", "rb") as scaler_file:
+        scaler = pickle.load(scaler_file)
+
+    
+    new_features = feature_extraction(sample_file, frequency, fs, rtl_gain)
+
+    new_features_selected = new_features[["Avg dBm", "PSD", "Entropy", "RMS"]]
+
+    new_features_scaled = scaler.transform(new_features_selected)
+
+    prediction = knn_model.predict(new_features_scaled)
+
+    prediction_text = "Safe" if prediction[0] == 0 else "Jamming"
+
+    print(f'The predicted classification is: {prediction_text}')
+
+
+# Example usage with new signal data
+file = 'Jamming_raw_iq.dat'
+iq_data = np.fromfile(file, dtype=np.complex64)
+frequency = 433.3 
+fs = 1e6  
+rtl_gain = 30  
+
