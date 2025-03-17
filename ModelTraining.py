@@ -80,26 +80,32 @@ def test_1():
     This model uses all features aviable including the freqency which when looking into a feature importance graph the RF classifer
     was using frequecy as it most important feature which for what this project is is no help as a safe and jamming signal can both be on the same frequency
     """
+    df = pd.read_csv("preprocessed_data.csv")
 
-    df = pd.read_csv('Dataset_standard.csv')
-    X = df.drop(columns=["Classification"])
-    y = df["Classification"]
+    features = ['Avg dBm', 'PSD', 'Entropy', 'RMS'] 
+    X_selected = df[features]
+    y = df['Classification'] 
 
-    X_train, x_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=42)
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X_selected)
+
+    encoder = LabelEncoder()
+    y_encoded = encoder.fit_transform(y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=0.3, random_state=42)
 
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
-    y_pred = model.predict(x_test)
+    y_pred = model.predict(X_test)
     print("Accuracy:", accuracy_score(y_test, y_pred))
     print(classification_report(y_test, y_pred))
 
-    scores = cross_val_score(model, X, y, cv=5)
+    scores = cross_val_score(model, X_selected,  y, cv=5)
     print("Cross-validation scores:", scores)
     print("Mean accuracy: ", scores.mean())
 
     feature_importance = model.feature_importances_
-    features = X.columns
 
     plt.figure(figsize=(8, 5))
     plt.barh(features, feature_importance)
@@ -117,12 +123,19 @@ def test_2():
     next tests are to be made with other models to see perforamce changes
     """
 
-    df = pd.read_csv("Dataset_standardized.csv")
+    df = pd.read_csv("preprocessed_data.csv")
 
-    X = df.drop(columns=["Classification"])
-    y = df["Classification"]
+    features = ['Avg dBm', 'PSD', 'Entropy', 'RMS'] 
+    X_selected = df[features]
+    y = df['Classification'] 
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X_selected)
+
+    encoder = LabelEncoder()
+    y_encoded = encoder.fit_transform(y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=0.3, random_state=42)
 
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
@@ -132,7 +145,7 @@ def test_2():
 
     feature_importance = model.feature_importances_
 
-    feature_names = X.columns
+    feature_names = X_selected
 
     plt.figure(figsize=(10, 5))
     plt.barh(feature_names, feature_importance, color='blue')
@@ -146,12 +159,19 @@ def test_3():
 
     """ Decision tree """
 
-    df = pd.read_csv("Dataset_standardized.csv")
+    df = pd.read_csv("preprocessed_data.csv")
 
-    X = df.drop(columns=["Classification"])
-    y = df["Classification"]
+    features = ['Avg dBm', 'PSD', 'Entropy', 'RMS'] 
+    X_selected = df[features]
+    y = df['Classification'] 
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X_selected)
+
+    encoder = LabelEncoder()
+    y_encoded = encoder.fit_transform(y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=0.3, random_state=42)
     dt_model = DecisionTreeClassifier(random_state=42)
     dt_model.fit(X_train, y_train)
     y_pred = dt_model.predict(X_test)
@@ -195,67 +215,37 @@ def test_4():
 
     """ KNN """
 
-    
-    df = pd.read_csv("Dataset_standardized.csv")
-    X = df.drop(columns=["Classification"])
-    y = df["Classification"]
+    data = pd.read_csv("preprocessed_data.csv")
+
+    X = data[['Avg dBm', 'PSD', 'Entropy', 'RMS']]  
+    y = data['Classification']  
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    scaler = StandardScaler()
-    X_train_Scaled = scaler.fit_transform(X_train)
-    X_test_Scaled = scaler.transform(X_test)
+    knn = KNeighborsClassifier(n_neighbors=5)
+    knn.fit(X_train, y_train)
+    y_pred = knn.predict(X_test)
 
-    knn_model = KNeighborsClassifier(n_neighbors=5)
-    knn_model.fit(X_train_Scaled, y_train)
-    y_pred = knn_model.predict(X_test_Scaled)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(f'Accuracy: {accuracy * 100:.2f}%')
 
-    print(classification_report(y_test, y_pred))
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    print('Confusion Matrix:')
+    print(conf_matrix)
 
-    cm = confusion_matrix(y_test, y_pred)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Safe", "Jamming"])
-    disp.plot(cmap="Blues")
-    plt.title("KNN Confusion MAtrix")
-    #plt.show()
-    print("Confusion Matrix:\n", cm)
+    with open("knn.pkl", "wb") as model_file:
+        pickle.dump(knn, model_file)
 
-
-    print("Class distribution in y_train:")
-    print(y_train.value_counts())
-
-    print("Class distribution in y_test:")
-    print(y_test.value_counts())
-
-    corr_matrix = X.corr()
-    print(corr_matrix)
-
-
-    cv_scores = cross_val_score(knn_model, X_train_Scaled, y_train, cv=5)
-    print(f"Cross-validation scores (scaled data): {cv_scores}")
-    print(f"Mean Cross-validation Accuracy: {cv_scores.mean():.4f}")
-
-    precision = precision_score(y_test, y_pred, pos_label="Jamming", average="binary")
-    recall = recall_score(y_test, y_pred, pos_label="Jamming", average="binary")
-    f1 = f1_score(y_test, y_pred, pos_label="Jamming", average="binary")
-    auc = roc_auc_score(y_test, knn_model.predict_proba(X_test_Scaled)[:, 1])
-
-    print(f"Precision: {precision:.4f}")
-    print(f"Recall: {recall:.4f}")
-    print(f"F1 Score: {f1:.4f}")
-    print(f"AUC: {auc:.4f}")
-
-    strat_kfold = StratifiedKFold(n_splits=5)
-    strat_cv_scores = cross_val_score(knn_model, X_train_Scaled, y_train, cv=strat_kfold)
-    print(f"Stratified Cross-validation scores: {strat_cv_scores}")
-    print(f"Mean Stratified Cross-validation Accuracy: {strat_cv_scores.mean():.4f}")
+    print("Model and scaler saved.")
 
 
 def test_5():
     """Train, Standardize, and Export SVM Model"""
 
-    df = pd.read_csv("Dataset_standardized.csv")
+    data = pd.read_csv("preprocessed_data.csv")
 
-    X = df.drop(columns=["Classification"])
-    y = df["Classification"]
+    X = data[['Avg dBm', 'PSD', 'Entropy', 'RMS']]  
+    y = data['Classification'] 
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)  
@@ -279,7 +269,6 @@ def test_5():
         pickle.dump(scaler, scaler_file)
 
     print("Model and scaler saved.")
-
 
 
 def test_6():
@@ -399,82 +388,3 @@ df = pd.read_csv("Dataset_shuffled.csv")
 # Preprocess and save as a new file
 X_train, X_test, y_train, y_test = preprocess_rf_dataset(df, save_path="preprocessed_data.csv")"
 """
-
-df = pd.read_csv("preprocessed_data.csv")
-
-# Step 1: Select Relevant Features
-features = ['Avg dBm', 'PSD', 'Entropy', 'RMS']  # You can drop 'RMS' if needed
-X_selected = df[features]
-y = df['Classification']  # Assuming 'Classification' is the target variable
-
-# Step 2: Preprocessing (Scaling, Label Encoding)
-scaler = MinMaxScaler()
-X_scaled = scaler.fit_transform(X_selected)
-
-encoder = LabelEncoder()
-y_encoded = encoder.fit_transform(y)
-
-# Step 3: Split Data into Training and Testing Sets
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=0.3, random_state=42)
-
-
-def test_models_with_cv_and_test_set(X_train, X_test, y_train, y_test):
-    models = {
-        "Logistic Regression": LogisticRegression(C=1.0),
-        "K-Nearest Neighbors": KNeighborsClassifier(),
-        "Support Vector Machine": SVC(C=1.0),
-        "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42),
-        "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
-        "Naive Bayes": GaussianNB()
-    }
-
-    # Loop through each model and evaluate using cross-validation and test set
-    for model_name, model in models.items():
-        # Cross-validation on training data
-        cv_scores = cross_val_score(model, X_train, y_train, cv=5)
-        print(f"{model_name} - Cross-validation Accuracy: {cv_scores.mean():.2f} ± {cv_scores.std():.2f}")
-        
-        # Fit model on training data and evaluate on test set
-        model.fit(X_train, y_train)
-        test_accuracy = model.score(X_test, y_test)
-        print(f"{model_name} - Test Accuracy: {test_accuracy:.2f}")
-
-
-def test_models_with_full_cv(df):
-    X = df[['Avg dBm', 'PSD', 'Entropy', 'RMS']]  # Select features
-    y = df['Classification']  # Target variable
-
-    scaler = MinMaxScaler()
-    X_scaled = scaler.fit_transform(X)
-
-    encoder = LabelEncoder()
-    y_encoded = encoder.fit_transform(y)
-
-    models = {
-        "Logistic Regression": LogisticRegression(C=1.0),
-        "K-Nearest Neighbors": KNeighborsClassifier(),
-        "Support Vector Machine": SVC(C=1.0),
-        "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42),
-        "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
-        "Naive Bayes": GaussianNB()
-    }
-
-    # Perform cross-validation on entire dataset (no train/test split)
-    for model_name, model in models.items():
-        cv_scores = cross_val_score(model, X_scaled, y_encoded, cv=5)  # 5-fold cross-validation
-        print(f"{model_name} - Cross-validation Accuracy: {cv_scores.mean():.2f} ± {cv_scores.std():.2f}")
-
-test_models_with_full_cv(df)
-
-# After fitting the model
-rf_model = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42)
-rf_model.fit(X_train, y_train)
-
-# Plot feature importance
-import matplotlib.pyplot as plt
-plt.barh(features, rf_model.feature_importances_)
-plt.xlabel('Feature Importance')
-plt.title('Feature Importance in Random Forest')
-plt.show()
-
-
