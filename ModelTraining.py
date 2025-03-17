@@ -362,3 +362,119 @@ def test_7():
     plt.legend(loc='lower right')
     plt.show()
 
+
+def preprocess_rf_dataset(df, test_size=0.2, random_state=42, save_path=None):
+ 
+    df = df.drop(columns=["Frequency"], errors="ignore")
+
+    X = df.drop(columns=["Classification"])
+    y = df["Classification"]
+
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    X_scaled = pd.DataFrame(X_scaled, columns=X.columns)
+
+    label_encoder = LabelEncoder()
+    y_encoded = label_encoder.fit_transform(y)
+
+    df_preprocessed = X_scaled.copy()
+    df_preprocessed["Classification"] = y_encoded
+
+    if save_path:
+        df_preprocessed.to_csv(save_path, index=False)
+        print(f"Preprocessed dataset saved as: {save_path}")
+
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, 
+                                                        test_size=test_size, 
+                                                        random_state=random_state, 
+                                                        stratify=y_encoded)
+
+    return X_train, X_test, y_train, y_test
+
+"""
+# Load your dataset
+df = pd.read_csv("Dataset_shuffled.csv")
+
+# Preprocess and save as a new file
+X_train, X_test, y_train, y_test = preprocess_rf_dataset(df, save_path="preprocessed_data.csv")"
+"""
+
+df = pd.read_csv("preprocessed_data.csv")
+
+# Step 1: Select Relevant Features
+features = ['Avg dBm', 'PSD', 'Entropy', 'RMS']  # You can drop 'RMS' if needed
+X_selected = df[features]
+y = df['Classification']  # Assuming 'Classification' is the target variable
+
+# Step 2: Preprocessing (Scaling, Label Encoding)
+scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X_selected)
+
+encoder = LabelEncoder()
+y_encoded = encoder.fit_transform(y)
+
+# Step 3: Split Data into Training and Testing Sets
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=0.3, random_state=42)
+
+
+def test_models_with_cv_and_test_set(X_train, X_test, y_train, y_test):
+    models = {
+        "Logistic Regression": LogisticRegression(C=1.0),
+        "K-Nearest Neighbors": KNeighborsClassifier(),
+        "Support Vector Machine": SVC(C=1.0),
+        "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42),
+        "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
+        "Naive Bayes": GaussianNB()
+    }
+
+    # Loop through each model and evaluate using cross-validation and test set
+    for model_name, model in models.items():
+        # Cross-validation on training data
+        cv_scores = cross_val_score(model, X_train, y_train, cv=5)
+        print(f"{model_name} - Cross-validation Accuracy: {cv_scores.mean():.2f} ± {cv_scores.std():.2f}")
+        
+        # Fit model on training data and evaluate on test set
+        model.fit(X_train, y_train)
+        test_accuracy = model.score(X_test, y_test)
+        print(f"{model_name} - Test Accuracy: {test_accuracy:.2f}")
+
+
+def test_models_with_full_cv(df):
+    X = df[['Avg dBm', 'PSD', 'Entropy', 'RMS']]  # Select features
+    y = df['Classification']  # Target variable
+
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    encoder = LabelEncoder()
+    y_encoded = encoder.fit_transform(y)
+
+    models = {
+        "Logistic Regression": LogisticRegression(C=1.0),
+        "K-Nearest Neighbors": KNeighborsClassifier(),
+        "Support Vector Machine": SVC(C=1.0),
+        "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42),
+        "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
+        "Naive Bayes": GaussianNB()
+    }
+
+    # Perform cross-validation on entire dataset (no train/test split)
+    for model_name, model in models.items():
+        cv_scores = cross_val_score(model, X_scaled, y_encoded, cv=5)  # 5-fold cross-validation
+        print(f"{model_name} - Cross-validation Accuracy: {cv_scores.mean():.2f} ± {cv_scores.std():.2f}")
+
+test_models_with_full_cv(df)
+
+# After fitting the model
+rf_model = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42)
+rf_model.fit(X_train, y_train)
+
+# Plot feature importance
+import matplotlib.pyplot as plt
+plt.barh(features, rf_model.feature_importances_)
+plt.xlabel('Feature Importance')
+plt.title('Feature Importance in Random Forest')
+plt.show()
+
+

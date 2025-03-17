@@ -282,4 +282,3 @@ def test_model_with_file(iq_data, frequency, fs, rtl_gain):
 
     prediction = svm_model.predict(extracted_features_scaled)
     print(f"Predicted Class: {prediction[0]}")
-
