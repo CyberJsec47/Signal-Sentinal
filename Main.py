@@ -4,8 +4,7 @@ from colorama import Fore
 import numpy as np
 from Functions import *
 
-file = 'Jamming_raw_iq.dat'
-iq_data = np.fromfile(file, dtype=np.complex64)
+
 fs = 1_000_000
 
 def opening_script():
