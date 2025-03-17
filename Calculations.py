@@ -14,7 +14,7 @@ colorama.init(autoreset=True)
 file = 'iq_samples.dat'
 iq_data = np.fromfile(file, dtype=np.complex64)
 fs = 1_000_000
-rtl_gain = 20.0
+rtl_gain = 28.0
 jam_file = 'Jamming_raw_iq.dat'
 jam_iq = np.fromfile(jam_file, dtype=np.complex64)
 
@@ -49,7 +49,6 @@ def find_entropy(sample_file):
 
 def find_psd(sample_file, sample_rate):
     if np.all(sample_file == 0):
-        print("Warning: Input signal is silent")
         return -np.inf
     sample_file = sample_file / np.max(np.abs(sample_file))
     f, psd = welch(sample_file, sample_rate, nperseg=1024, return_onesided=True)
@@ -67,14 +66,17 @@ def find_rms(sample_file):
     rms = np.sqrt(np.mean(np.abs(sample_file)**2))
     return rms
 
+
 def find_dBm(sample_file, gain_dB=0):
+    gain_dB = float(gain_dB) 
     mag = np.abs(sample_file)
     power_linear = mag**2
     power_linear[power_linear == 0] = 1e-12
     calibration_factor = -30 + gain_dB
     power_dBm = 10 * np.log10(power_linear) + calibration_factor
     avg_power_dBm = 10 * np.log10(np.mean(power_linear)) + calibration_factor
-    return round(avg_power_dBm,2)
+    return round(avg_power_dBm, 2)
+
 
 
 def feature_extraction(sample_file, frequency, fs, rtl_gain):

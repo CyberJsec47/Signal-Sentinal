@@ -80,7 +80,9 @@ def rolling_window(seconds, frequency, classification):
     try:
         freq = sdr.center_freq = frequency
         fs = sdr.fs = 1e6
-        rtl_gain = sdr.gain = 'auto'
+        sdr.gain = 28.0
+        time.sleep(0.5)
+        rtl_gain = sdr.gain  
 
         total_samples = int(seconds * fs)
         chunk_size = 256 * 1024
@@ -105,7 +107,8 @@ def rolling_window(seconds, frequency, classification):
         file = 'iq_samples.dat'
         iq_data = np.fromfile(file, dtype=np.complex64)
         feature_extraction(iq_data, frequency, fs, rtl_gain)
-        export_csv(iq_data, frequency, fs, seconds, classification)
+        export_csv(iq_data, frequency, fs, classification)
+
 
 
 def visualise_signal(file, freq_hz):
@@ -279,3 +282,4 @@ def test_model_with_file(iq_data, frequency, fs, rtl_gain):
 
     prediction = svm_model.predict(extracted_features_scaled)
     print(f"Predicted Class: {prediction[0]}")
+
