@@ -245,6 +245,7 @@ def test_4():
         pickle.dump(scaler, scaler_file)
 
     print("Model and scaler saved.")
+    
 
 def test_5():
     """Train, Standardize, and Export SVM Model"""
@@ -388,10 +389,65 @@ def preprocess_rf_dataset(df, test_size=0.2, random_state=42, save_path=None):
 
     return X_train, X_test, y_train, y_test
 
-"""
-# Load your dataset
-df = pd.read_csv("Dataset_shuffled.csv")
 
-# Preprocess and save as a new file
-X_train, X_test, y_train, y_test = preprocess_rf_dataset(df, save_path="preprocessed_data.csv")"
-"""
+def split_and_encode_csv(input_csv, output_train='train_data.csv', output_test='test_data.csv', output_val='val_data.csv'):
+    # Read the input CSV file
+    df = pd.read_csv(input_csv)
+    
+    # Encode the 'Classification' column
+    encoder = LabelEncoder()
+    df['Classification'] = encoder.fit_transform(df['Classification'])
+    
+    # Split the data into train, test, and validation sets
+    train_data, temp_data = train_test_split(df, test_size=0.4, random_state=42)  # 60% train, 40% temp (split into test/val)
+    test_data, val_data = train_test_split(temp_data, test_size=0.5, random_state=42)  # Split remaining into 50% test and 50% val
+    
+    # Save the splits into CSV files
+    train_data.to_csv(output_train, index=False)
+    test_data.to_csv(output_test, index=False)
+    val_data.to_csv(output_val, index=False)
+
+
+
+def stanardScaler():
+    # Load your datasets
+    train_data = pd.read_csv('train_data.csv')
+    test_data = pd.read_csv('test_data.csv')
+    val_data = pd.read_csv('val_data.csv')
+
+    # Separate the features (X) and the target variable (y) - "Classification" column
+    X_train = train_data.drop(columns=['Classification'])
+    y_train = train_data['Classification']
+
+    X_test = test_data.drop(columns=['Classification'])
+    y_test = test_data['Classification']
+
+    X_val = val_data.drop(columns=['Classification'])
+    y_val = val_data['Classification']
+
+    # Initialize the StandardScaler
+    scaler = StandardScaler()
+
+    # Fit the scaler on the training data and transform it
+    X_train_scaled = scaler.fit_transform(X_train)
+
+    # Transform the test and validation data using the same scaler
+    X_test_scaled = scaler.transform(X_test)
+    X_val_scaled = scaler.transform(X_val)
+
+    # Convert the scaled data back to DataFrame (optional: specify column names if necessary)
+    X_train_scaled_df = pd.DataFrame(X_train_scaled, columns=X_train.columns)
+    X_test_scaled_df = pd.DataFrame(X_test_scaled, columns=X_test.columns)
+    X_val_scaled_df = pd.DataFrame(X_val_scaled, columns=X_val.columns)
+
+    # Add the "Classification" column back to the scaled data
+    train_scaled_df = pd.concat([X_train_scaled_df, y_train], axis=1)
+    test_scaled_df = pd.concat([X_test_scaled_df, y_test], axis=1)
+    val_scaled_df = pd.concat([X_val_scaled_df, y_val], axis=1)
+
+    # Save the scaled datasets to new CSV files
+    train_scaled_df.to_csv('train_scaled.csv', index=False)
+    test_scaled_df.to_csv('test_scaled.csv', index=False)
+    val_scaled_df.to_csv('val_scaled.csv', index=False)
+
+    print("Scaling applied to features and new files saved.")

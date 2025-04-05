@@ -73,7 +73,7 @@ def view_CSV(file_path, num_rows):
  
 
 
-def rolling_window(seconds, frequency):
+def rolling_window(seconds, frequency, classification):
 
     fs = 1_000_000
     sdr = RtlSdr()
@@ -105,10 +105,10 @@ def rolling_window(seconds, frequency):
     finally:
         sdr.close()
 
-        #file = 'iq_samples.dat'
-        #iq_data = np.fromfile(file, dtype=np.complex64)
-        #feature_extraction(iq_data, frequency, fs, rtl_gain)
-        #export_csv(iq_data, frequency, fs, classification)
+        file = 'iq_samples.dat'
+        iq_data = np.fromfile(file, dtype=np.complex64)
+        feature_extraction(iq_data, frequency, fs, rtl_gain)
+        export_csv(iq_data, frequency, fs, classification)
 
 
 
