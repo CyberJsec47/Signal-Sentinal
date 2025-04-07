@@ -14,3 +14,5 @@ CSV_Files
 test_scaled.csv
 train_scaled.csv
 val_scaled.csv
+naive_bayes_model.pkl
+scaler.pkl
