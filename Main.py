@@ -81,11 +81,13 @@ def main(frequency):
             elif option == 4:
                 print(Fore.GREEN + "Choose how long to capture for: (seconds)")
                 seconds = int(input(Fore.GREEN + "Time in Seconds: "))
-                rolling_window(seconds, freq_hz)
+                signalCapture(seconds, freq_hz)
+                
                 file = 'iq_samples.dat'
                 iq_data = np.fromfile(file, dtype=np.complex64)
-                rtl_gain = 30  
-                test_with_KNN(iq_data, freq_hz, fs, rtl_gain)
+                rtl_gain = 30 
+                modelTest(iq_data, freq_hz, fs, rtl_gain)
+
                 input(Fore.GREEN + "\nPress Enter to return to the menu...")
                 continue
 

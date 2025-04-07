@@ -14,6 +14,7 @@ from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+import pickle
 
 
 """Model training, testing, and evaluation
@@ -318,12 +319,10 @@ def knn():
 
 def naiveBayes():
 
-    # Load datasets
     train_data = pd.read_csv('/home/josh/Documents/SignalSentinel/CSV_Files/train_data.csv')
     test_data = pd.read_csv('/home/josh/Documents/SignalSentinel/CSV_Files/test_data.csv')
     val_data = pd.read_csv('/home/josh/Documents/SignalSentinel/CSV_Files/val_data.csv')
 
-    # Define features and target
     features = ['RMS', 'Max Magnitude', 'Amplitude', 'PSD', 'Signal To Noise']
     target = 'Classification'
 
@@ -334,27 +333,42 @@ def naiveBayes():
     X_val = val_data[features]
     y_val = val_data[target]
 
-    # Scale the features
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
     X_val_scaled = scaler.transform(X_val)
 
-    # Train the Naive Bayes model
     nb = GaussianNB()
     nb.fit(X_train_scaled, y_train)
 
-    # Evaluate on test set
     y_test_pred = nb.predict(X_test_scaled)
     print("Test Accuracy:", accuracy_score(y_test, y_test_pred))
     print("Confusion Matrix (Test Set):\n", confusion_matrix(y_test, y_test_pred))
     print("Classification Report (Test Set):\n", classification_report(y_test, y_test_pred))
 
-    # Evaluate on validation (unseen) set
     y_val_pred = nb.predict(X_val_scaled)
     print("Validation Accuracy (Unseen Set):", accuracy_score(y_val, y_val_pred))
     print("Confusion Matrix (Validation Set - Unseen):\n", confusion_matrix(y_val, y_val_pred))
     print("Classification Report (Validation Set - Unseen):\n", classification_report(y_val, y_val_pred))
 
-naiveBayes()
+    print(nb)
 
+    try:
+        with open('naive_bayes_model.pkl', 'wb') as model_file:
+            pickle.dump(nb, model_file)
+        print("Model saved successfully.")
+    except Exception as e:
+        print(f"Error saving model: {e}")
+
+    # After saving scaler
+    try:
+        with open('scaler.pkl', 'wb') as scaler_file:
+            pickle.dump(scaler, scaler_file)
+        print("Scaler saved successfully.")
+    except Exception as e:
+        print(f"Error saving scaler: {e}")
+
+    print("Model and Scaler saved as naive_bayes_model.pkl and scaler.pkl")
+
+
+naiveBayes()

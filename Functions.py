@@ -111,6 +111,40 @@ def rolling_window(seconds, frequency, classification):
         export_csv(iq_data, frequency, fs, classification)
 
 
+def signalCapture(seconds, frequency):
+    fs = 1_000_000
+    sdr = RtlSdr()
+
+    try:
+        freq = sdr.center_freq = frequency
+        fs = sdr.fs = 1e6
+        sdr.gain = 28.0
+        time.sleep(0.5)
+        rtl_gain = sdr.gain  
+
+        total_samples = int(seconds * fs)
+        chunk_size = 256 * 1024
+        captured_samples = []
+        start_time = time.time()
+
+        while len(captured_samples) < total_samples:
+            sampled_needed = total_samples - len(captured_samples)
+            chunk = sdr.read_samples(min(chunk_size, sampled_needed))
+            captured_samples.extend(chunk)
+
+            if time.time() - start_time >= seconds:
+                break
+
+        captured_samples_np = np.array(captured_samples, dtype=np.complex64)
+        captured_samples_np.tofile('iq_samples.dat')
+
+    finally:
+        sdr.close()
+
+    features = feature_extraction(captured_samples_np, frequency, fs, rtl_gain)
+    return features
+
+
 
 def visualise_signal(file, freq_hz):
 
@@ -269,48 +303,26 @@ def auto_jam(folder_path, num_files):
 
 
 
-def test_model_with_file(iq_data, frequency, fs, rtl_gain):
-    """Test the SVM model with a .dat file after extracting and standardizing features"""
 
-    with open("svm_jamming_detector.pkl", "rb") as model_file:
-        svm_model = pickle.load(model_file)
+def modelTest(sample_file, frequency, fs, rtl_gain):
+    """
+    Function to load the trained model and scaler, then predict on new sample data.
+    """
+    with open("naive_bayes_model.pkl", "rb") as model_file:
+        naiveBayes = pickle.load(model_file)
 
     with open("scaler.pkl", "rb") as scaler_file:
         scaler = pickle.load(scaler_file)
-
-    extracted_features_df = feature_extraction(iq_data, frequency, fs, rtl_gain)
-
-    extracted_features_scaled = scaler.transform(extracted_features_df)
-
-    prediction = svm_model.predict(extracted_features_scaled)
-    print(f"Predicted Class: {prediction[0]}")
-
-
-def test_with_KNN(sample_file, frequency, fs, rtl_gain):
-
-    with open("/home/josh/Documents/SignalSentinel/models/knn.pkl", "rb") as model_file:
-        knn_model = pickle.load(model_file)
-    with open("/home/josh/Documents/SignalSentinel/models/KNN_scaler.pkl", "rb") as scaler_file:
-        scaler = pickle.load(scaler_file)
-
     
     new_features = feature_extraction(sample_file, frequency, fs, rtl_gain)
 
-    new_features_selected = new_features[["Avg dBm", "PSD", "Entropy", "RMS"]]
+    new_features_selected = new_features[['RMS', 'Max Magnitude', 'Amplitude', 'PSD', 'Signal To Noise']]
 
     new_features_scaled = scaler.transform(new_features_selected)
 
-    prediction = knn_model.predict(new_features_scaled)
+    prediction = naiveBayes.predict(new_features_scaled)
 
     prediction_text = "Safe" if prediction[0] == 0 else "Jamming"
 
     print(f'The predicted classification is: {prediction_text}')
-
-
-# Example usage with new signal data
-file = 'Jamming_raw_iq.dat'
-iq_data = np.fromfile(file, dtype=np.complex64)
-frequency = 433.3 
-fs = 1e6  
-rtl_gain = 30  
 

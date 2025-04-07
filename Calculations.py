@@ -93,17 +93,13 @@ def feature_extraction(sample_file, frequency, fs, rtl_gain):
     Amplitude = find_amplitude(sample_file)
     RMS = find_rms(sample_file)
     avg_dBm = find_dBm(sample_file, rtl_gain)
-
+    """
     print(Fore.BLUE + f"Frequency: {Fore.GREEN}{Freq}\n{Fore.BLUE}Signal to Noise ratio: {Fore.GREEN}{SNR}\n{Fore.BLUE}Magnitude: {Fore.GREEN}{Mag}\n{Fore.BLUE}Phase: {Fore.GREEN}"
                       f"{Phase}\n{Fore.BLUE}Entropy: {Fore.GREEN}{Entropy}\n{Fore.BLUE}Power Spectral Density: {Fore.GREEN}{PSD}\n{Fore.BLUE}Amplitude: {Fore.GREEN}{Amplitude}"
                       f"\n{Fore.BLUE}RMS: {Fore.GREEN}{RMS}\n{Fore.BLUE}dBm: {Fore.GREEN}{avg_dBm:.2f}")
+    """
 
-    features = pd.DataFrame([[SNR, Mag, Phase, Entropy, PSD, Amplitude, RMS, avg_dBm]], 
-                            columns=["Signal To Noise", "Max Magnitude", "Avg dBm", "Average Phase", "Entropy", 
-                                     "PSD", "Amplitude", "RMS"])
-
-    return features
-
+    return pd.DataFrame([[RMS, Mag, Amplitude, PSD, SNR]], columns=['RMS', 'Max Magnitude', 'Amplitude', 'PSD', 'Signal To Noise'])
 
 def export_csv(sample_file, frequency, fs, classification):
 
