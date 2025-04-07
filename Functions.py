@@ -208,6 +208,7 @@ def mat_to_dat(filename):
         iq_data.tofile(output_file)
         print(f"Saved mat file to {output_file}")
 
+mat_to_dat('/home/josh/Documents/SignalSentinel/Raw_IQ_Dataset/Testing/SingleFM/Testing_raw_1216.mat')
 
 def gen_jam_data(frequency, classification, jam_file):
     fs = 1_000_000
@@ -324,5 +325,8 @@ def modelTest(sample_file, frequency, fs, rtl_gain):
 
     prediction_text = "Safe" if prediction[0] == 0 else "Jamming"
 
-    print(f'The predicted classification is: {prediction_text}')
+    if prediction[0] == 0:
+        print(Fore.GREEN + f'The predicted classification is: {prediction_text}')
+    else:
+        print(Fore.RED + f'The predicted classification is: {prediction_text}')
 

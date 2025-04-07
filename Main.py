@@ -33,25 +33,17 @@ def main(frequency):
         while True:
 
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Main Menu               |")
+            print(Fore.GREEN + "| Main Menu                        |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Capture a signal    [1] |")
+            print(Fore.GREEN + "| Signal to CSV                [1] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Change frequency    [2] |")
+            print(Fore.GREEN + "| Change frequency             [2] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Visualise signal    [3] |")
+            print(Fore.GREEN + "| Test model with live signal  [3] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Test model          [4] |")
+            print(Fore.GREEN + "| Test model with saved signal [4] |")
             print(Fore.BLUE + "-" * 25)
-            print(Fore.RED + "Only needed if adding more data to SAFE label set")
-            print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Convert CSV data    [5] |")
-            print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Convert Mat data    [6] |")
-            print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Add jamming to CSV  [7] |")
-            print(Fore.BLUE + "-" * 25)
-            print(Fore.GREEN + "| Exit                [8] |")
+            print(Fore.GREEN + "| Exit                         [5] |")
             print(Fore.BLUE + "-" * 25)
 
             option = int(input(Fore.GREEN + "| Choose an option: "))
@@ -73,12 +65,6 @@ def main(frequency):
                 continue 
 
             elif option == 3:
-                print(Fore.GREEN + "Generating FFT plot...")
-                visualise_signal("iq_samples.dat", freq_hz)
-                input(Fore.GREEN + "\nPress Enter to return to the menu...")
-                continue
-
-            elif option == 4:
                 print(Fore.GREEN + "Choose how long to capture for: (seconds)")
                 seconds = int(input(Fore.GREEN + "Time in Seconds: "))
                 signalCapture(seconds, freq_hz)
@@ -91,35 +77,13 @@ def main(frequency):
                 input(Fore.GREEN + "\nPress Enter to return to the menu...")
                 continue
 
-            elif option ==  5:
-                    num_rows_to_process = 20
-                    start_row = 10000
-                    end_row = start_row + num_rows_to_process - 1
+            elif option == 4:
+                test_file = input(Fore.GREEN + "Choose a file to test with: ")
+                iqfile = np.fromfile(test_file, dtype=np.complex64)
+                rtl_gain = 30
+                modelTest(iqfile, freq_hz, fs, rtl_gain)
 
-                    for row in range(start_row, end_row + 1):
-                        try:
-                            classification = "Safe"  
-                            print(f"Processing row {row}...")
-                            freq = convert_to_dat(row)
-                            new_file = 'new_iq_samples.dat'
-                            new_iq_data = np.fromfile(new_file, dtype=np.complex64)
-                            feature_extraction(new_iq_data, freq)
-                            export_csv(new_iq_data, freq, fs, classification)
-                            print(f"Finished processing row {row}.")
-                        except Exception as e:
-                            print(f"Error processing row {row}: {e}")
-                            continue 
-
-            elif option == 6:
-                filename = input("Type a file to convert: ")
-                mat_to_dat(filename)
-
-            elif option == 7:
-                folder_path = input("Type folder path to use: ")
-                num_files = int(input("How many files to proccess?: "))
-                auto_jam(folder_path, num_files)
-
-            elif option == 8:
+            elif option == 5:
                 print(Fore.RED + f.renderText("Exiting"))
                 quit()
 
