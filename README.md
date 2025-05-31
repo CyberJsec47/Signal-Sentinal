@@ -13,15 +13,4 @@
   ##### Car thefts have been on a constant rise, with criminals having easy access to cheap SDR devices and pre built jamming systems more hopeful crinimals are taking advange of keyless car entry and by passing cars GPS tracking devices. <br>A common method they use is to clone key fobs to gain access to the car then to deplot a jammer so the car cannot be tracked until they can remove the module and at this point recovery efforts can be lost. Pairing a passive detection system such as mine could provide an extra layer of protection for a vehicle 
 
   ---
-
-  ## Current work in progress
-
-  ##### Data collection<br>A set of safe signal data has been collected with over 300 different RF signals labaled as safe, coming from a RF Signal data set from Kaggle this will also be topped up with live capture data at a later time including common RF devices, radio commmuncation, background noise all with the idea to create a safe labaled dataset for training<br><br>The next data is the jamming labaled data, this is going to be a larger task as I could only find one dataset of jamming signals with their raw I/Q data but it lacks meta data or labels on what frequencies are being used and a lack of frequency labled in the training set could provide issues for reliable training.<br>The current workout for this is try and create simulated jamming signals through GNU radio and instead of transmitting, sent straight to a .dat file with the raw IQ data to be inputted into the program.
-
-  ---
-  ## Next steps
-
-  #### Feature importance
-
-  ##### Once a good size dataset has been create I can start preparing for ML training, first of all would be the data cleaning, feature importance and normalisation. The features I've chosen give a large range of statics for the models to train from but for a simple two way classification all may not be needed and could effect the overall training
  
