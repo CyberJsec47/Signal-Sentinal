@@ -1,6 +1,6 @@
 # Signal Sentinel
 --- 
-#### A BSc(Hons) Cyber Security dissertation project for Solent University by Josh Perryman.<br><br>This project aims to create a product that can passively detect RF jamming attacks through the use of machine learning to classify incoming signals as either safe or to be flagged up as a jamming attempt.<br><br>The idea behind this project is to create a detection system for small form embedded systems, the final product will be build on a Raspberry Pi and utalised as RTL-SDR.
+#### A BSc(Hons) Cyber Security dissertation project for Solent University by Josh Perryman.<br><br>This project aims to create a product that can passively detect RF jamming attacks through the use of machine learning to classify incoming signals as either safe or to be flagged up as a jamming attempt.<br><br>The idea behind this project is to create a detection system for small form embedded systems, the final product is built on a Raspberry Pi and utilises a RTL-SDR.
 ---
 ## Why?
 
