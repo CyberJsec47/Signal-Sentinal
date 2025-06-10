@@ -2,11 +2,6 @@
 --- 
 #### A BSc(Hons) Cyber Security dissertation project for Solent University by Josh Perryman.<br><br>This project aims to create a product that can passively detect RF jamming attacks through the use of machine learning to classify incoming signals as either safe or to be flagged up as a jamming attempt.<br><br>The idea behind this project is to create a detection system for small form embedded systems, the final product is built on a Raspberry Pi and utilises a RTL-SDR.
 ---
-
-## Update 09/06/25
-
-I've seen this project has recently started to get some attention (amazing) initially this project was finished and between this and the dissertation report I got a First class degree (amazing X2).<br>If anyone wants to try and retrain and develop a better model I'd love to see the results, open some issues or create a discussion for any questions - JP
-
 ## Why?
 
 #### The reasoning behind why this project is planned to be used on embedded systems other than as a general radio detection system is the goal to try and protect vulnerable IoT systems from RF jamming attacks.<br>This product will be detection only allowing intergration with other systems for RF jamming mitigation.<br><br>Examples of use cases could be:
